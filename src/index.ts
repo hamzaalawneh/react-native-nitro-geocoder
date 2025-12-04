@@ -14,4 +14,12 @@ export const Geocoder: NitroGeocoder = createGeocoder()
 
 export type { NitroGeocoder, GeocodeResult, ReverseGeocodeResult, GeocodingConfidence }
 
+export {
+  useReverseGeocode,
+  useGeocode,
+  useGeocodeMultiple,
+  useDistance,
+  useGeocoder,
+} from './hooks'
+
 export default Geocoder

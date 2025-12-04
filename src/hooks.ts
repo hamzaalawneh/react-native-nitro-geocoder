@@ -1,9 +1,6 @@
 import { useState, useCallback } from 'react'
-import {
-  Geocoder,
-  GeocodeResult,
-  ReverseGeocodeResult,
-} from 'react-native-nitro-geocoder'
+import { Geocoder } from './index'
+import type { GeocodeResult, ReverseGeocodeResult } from './specs/Geocoder.nitro'
 
 /**
  * Hook for reverse geocoding (coordinates → address)
@@ -21,8 +18,8 @@ export function useReverseGeocode() {
         const data = await Geocoder.reverseGeocode(latitude, longitude, locale)
         setResult(data)
         return data
-      } catch (e: any) {
-        setError(e.message)
+      } catch (e: unknown) {
+        setError(e instanceof Error ? e.message : 'Unknown error')
         return null
       } finally {
         setLoading(false)
@@ -54,8 +51,8 @@ export function useGeocode() {
       const data = await Geocoder.geocode(address, locale)
       setResult(data)
       return data
-    } catch (e: any) {
-      setError(e.message)
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Unknown error')
       return null
     } finally {
       setLoading(false)
@@ -86,8 +83,8 @@ export function useGeocodeMultiple() {
         const data = await Geocoder.geocodeMultiple(address, maxResults, locale)
         setResults(data)
         return data
-      } catch (e: any) {
-        setError(e.message)
+      } catch (e: unknown) {
+        setError(e instanceof Error ? e.message : 'Unknown error')
         return []
       } finally {
         setLoading(false)
@@ -132,8 +129,7 @@ export function useGeocoder() {
   const isAvailable = Geocoder.isGeocodingAvailable
 
   const reverseGeocode = useCallback(
-    (lat: number, lon: number, locale = 'en') =>
-      Geocoder.reverseGeocode(lat, lon, locale),
+    (lat: number, lon: number, locale = 'en') => Geocoder.reverseGeocode(lat, lon, locale),
     []
   )
 
