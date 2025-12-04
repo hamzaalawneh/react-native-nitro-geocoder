@@ -1,0 +1,73 @@
+{
+  "name": "react-native-nitro-geocoder",
+  "version": "0.1.0",
+  "description": "High-performance native geocoding for React Native using Nitro Modules JSI",
+  "main": "lib/index",
+  "module": "lib/index",
+  "types": "lib/index.d.ts",
+  "react-native": "src/index",
+  "source": "src/index",
+  "files": [
+    "src",
+    "example",
+    "react-native.config.js",
+    "lib",
+    "nitrogen",
+    "android/build.gradle",
+    "android/gradle.properties",
+    "android/fix-prefab.gradle",
+    "android/CMakeLists.txt",
+    "android/src",
+    "ios/**/*.h",
+    "ios/**/*.m",
+    "ios/**/*.mm",
+    "ios/**/*.cpp",
+    "ios/**/*.swift",
+    "app.plugin.js",
+    "nitro.json",
+    "*.podspec",
+    "README.md"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf android/build node_modules/**/android/build lib",
+    "build": "tsc",
+    "specs": "tsc --noEmit false && nitrogen --logLevel=\"debug\"",
+    "release": "rm -f *.tgz && yarn specs && yarn && npx nitrogen && yarn build && yarn pack"
+  },
+  "keywords": [
+    "react-native",
+    "nitro",
+    "geocoder",
+    "geocoding",
+    "reverse-geocoding",
+    "location",
+    "address",
+    "coordinates",
+    "jsi",
+    "native-module"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saadelsabahy/react-native-nitro-geocoder.git"
+  },
+  "author": "Saad Elsabahy",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/saadelsabahy/react-native-nitro-geocoder/issues"
+  },
+  "homepage": "https://github.com/saadelsabahy/react-native-nitro-geocoder#readme",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "nitrogen": "^0.31.10",
+    "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "react-native-nitro-modules": "*"
+  }
+}

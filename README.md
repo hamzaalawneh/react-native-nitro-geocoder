@@ -1,0 +1,267 @@
+# react-native-nitro-geocoder
+
+[![npm version](https://img.shields.io/npm/v/react-native-nitro-geocoder.svg)](https://www.npmjs.com/package/react-native-nitro-geocoder)
+[![license](https://img.shields.io/npm/l/react-native-nitro-geocoder.svg)](https://github.com/saadelsabahy/react-native-nitro-geocoder/blob/main/LICENSE)
+[![platforms](https://img.shields.io/badge/platforms-iOS%20%7C%20Android-lightgrey.svg)](https://reactnative.dev/)
+
+A high-performance native geocoding library for React Native using [Nitro Modules](https://github.com/mrousavy/nitro) JSI bindings.
+
+## Features
+
+- **JSI-powered**: Direct native calls without async bridge overhead
+- **Forward Geocoding**: Convert addresses to coordinates
+- **Reverse Geocoding**: Convert coordinates to addresses
+- **Multiple Results**: Get multiple geocoding suggestions
+- **Built-in Caching**: Automatic caching for repeated queries
+- **Locale Support**: Configurable language for results
+- **Distance Calculation**: Native distance calculation (synchronous)
+- **Confidence Scoring**: HIGH/MEDIUM/LOW based on address precision
+- **Zero Dependencies**: Uses native platform APIs only
+  - iOS: `CLGeocoder` (CoreLocation)
+  - Android: `android.location.Geocoder`
+
+## Performance
+
+### Benchmark Results (Real Device)
+
+| Test | Nitro JSI | Old Bridge | Result |
+|------|-----------|------------|--------|
+| Reverse Geocode | ~163ms | ~167ms | **+2.1% faster** |
+| Pure Bridge Speed (10K calls) | 0.64μs | ~5,000μs | **99.9% faster** |
+
+### Why Similar Geocoding Times?
+
+Geocoding is **network-bound** (~160ms to Apple/Google servers). The bridge overhead is negligible:
+
+```
+Network call:      ~160,000μs (97%)
+Nitro JSI bridge:       ~0.6μs (0.0004%)
+Old Bridge:          ~5,000μs (3%)
+```
+
+### Where Nitro JSI Shines
+
+For **synchronous operations** like `calculateDistance`, Nitro is **7,800x faster**:
+
+| Method | Per Call | Calls/Second |
+|--------|----------|--------------|
+| Nitro JSI | 0.64μs | **1,562,500** |
+| Old Bridge | ~5,000μs | ~200 |
+
+## Installation
+
+```bash
+yarn add react-native-nitro-geocoder react-native-nitro-modules
+```
+
+### iOS
+
+```bash
+cd ios && pod install
+```
+
+### Android
+
+No additional setup required.
+
+## Usage
+
+### Basic Import
+
+```typescript
+import { Geocoder } from 'react-native-nitro-geocoder'
+```
+
+### Check Availability
+
+```typescript
+if (Geocoder.isGeocodingAvailable) {
+  console.log('Geocoding is available')
+}
+```
+
+### Forward Geocoding (Address to Coordinates)
+
+```typescript
+const result = await Geocoder.geocode('Riyadh, Saudi Arabia', 'en')
+// {
+//   latitude: 24.7136,
+//   longitude: 46.6753,
+//   address: "Riyadh, Riyadh Province, Saudi Arabia",
+//   city: "Riyadh",
+//   country: "Saudi Arabia",
+//   countryCode: "SA",
+//   confidence: "MEDIUM"
+//   ...
+// }
+```
+
+### Reverse Geocoding (Coordinates to Address)
+
+```typescript
+const result = await Geocoder.reverseGeocode(24.7136, 46.6753, 'en')
+console.log(result.address) // "King Fahd Road, Riyadh, Saudi Arabia"
+console.log(result.city)    // "Riyadh"
+console.log(result.country) // "Saudi Arabia"
+```
+
+### Multiple Results
+
+```typescript
+const results = await Geocoder.geocodeMultiple('Springfield', 5, 'en')
+// Returns up to 5 matching locations
+```
+
+### Distance Calculation (Synchronous - Ultra Fast)
+
+```typescript
+// ~0.64μs per call - can do 1.5 million calls/second!
+const distance = Geocoder.calculateDistance(
+  24.7136, 46.6753,  // Riyadh
+  21.4225, 39.8262   // Mecca
+)
+console.log(`Distance: ${(distance / 1000).toFixed(2)} km`) // ~850 km
+```
+
+### Locale Support
+
+```typescript
+// English
+const en = await Geocoder.reverseGeocode(35.6762, 139.6503, 'en')
+console.log(en.country) // "Japan"
+
+// Arabic
+const ar = await Geocoder.reverseGeocode(24.7136, 46.6753, 'ar')
+console.log(ar.country) // "المملكة العربية السعودية"
+
+// Japanese
+const ja = await Geocoder.reverseGeocode(35.6762, 139.6503, 'ja')
+console.log(ja.country) // "日本"
+```
+
+### Cache Management
+
+```typescript
+Geocoder.clearCache()
+```
+
+## API Reference
+
+### Methods
+
+| Method | Description |
+|--------|-------------|
+| `geocode(address, locale)` | Address to coordinates |
+| `reverseGeocode(lat, lon, locale)` | Coordinates to address |
+| `geocodeMultiple(address, maxResults, locale)` | Get multiple results |
+| `calculateDistance(lat1, lon1, lat2, lon2)` | Distance in meters (sync) |
+| `clearCache()` | Clear internal cache |
+
+### Properties
+
+| Property | Description |
+|----------|-------------|
+| `isGeocodingAvailable` | Check if geocoding is available |
+
+### Types
+
+```typescript
+interface GeocodeResult {
+  latitude: number
+  longitude: number
+  address: string           // Full formatted address
+  street: string
+  district: string
+  city: string
+  state: string
+  country: string
+  countryCode: string
+  postalCode: string
+  confidence: 'HIGH' | 'MEDIUM' | 'LOW'
+}
+```
+
+## Benchmark Example
+
+Test the pure JSI bridge speed yourself:
+
+```typescript
+import { Geocoder } from 'react-native-nitro-geocoder'
+
+// Pure Bridge Speed Test (no network)
+const testBridgeSpeed = () => {
+  const ITERATIONS = 10000
+
+  const start = performance.now()
+  for (let i = 0; i < ITERATIONS; i++) {
+    Geocoder.calculateDistance(24.7136, 46.6753, 21.4225, 39.8262)
+  }
+  const total = performance.now() - start
+
+  console.log(`${ITERATIONS} calls in ${total.toFixed(2)}ms`)
+  console.log(`Per call: ${((total / ITERATIONS) * 1000).toFixed(2)}μs`)
+}
+
+// Geocoding Speed Test
+const testGeocodingSpeed = async () => {
+  const times: number[] = []
+
+  for (let i = 0; i < 10; i++) {
+    Geocoder.clearCache()
+    const start = performance.now()
+    await Geocoder.reverseGeocode(24.7136, 46.6753, 'en')
+    times.push(performance.now() - start)
+    await new Promise(r => setTimeout(r, 150)) // Avoid rate limit
+  }
+
+  const avg = times.reduce((a, b) => a + b) / times.length
+  console.log(`Average: ${avg.toFixed(2)}ms`)
+}
+```
+
+## Platform Notes
+
+### iOS
+- Uses `CLGeocoder` (CoreLocation)
+- iOS 14.0+
+- No API key required
+- Rate limited (~50 req/min)
+
+### Android
+- Uses `android.location.Geocoder`
+- API level 21+
+- No API key required
+- Check `isGeocodingAvailable` (some emulators don't support it)
+
+## React Hook Example
+
+```typescript
+import { useState, useCallback } from 'react'
+import { Geocoder, ReverseGeocodeResult } from 'react-native-nitro-geocoder'
+
+export function useReverseGeocode() {
+  const [result, setResult] = useState<ReverseGeocodeResult | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  const lookup = useCallback(async (lat: number, lon: number, locale = 'en') => {
+    setLoading(true)
+    try {
+      const data = await Geocoder.reverseGeocode(lat, lon, locale)
+      setResult(data)
+      return data
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  return { result, loading, lookup }
+}
+```
+
+## License
+
+MIT
+
+## Credits
+
+Built with [Nitro Modules](https://github.com/mrousavy/nitro) by Marc Rousavy.
