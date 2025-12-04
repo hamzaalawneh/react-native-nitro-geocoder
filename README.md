@@ -233,29 +233,77 @@ const testGeocodingSpeed = async () => {
 - No API key required
 - Check `isGeocodingAvailable` (some emulators don't support it)
 
-## React Hook Example
+## React Hooks
+
+The library includes ready-to-use React hooks:
 
 ```typescript
-import { useState, useCallback } from 'react'
-import { Geocoder, ReverseGeocodeResult } from 'react-native-nitro-geocoder'
+import {
+  useGeocode,
+  useReverseGeocode,
+  useGeocodeMultiple,
+  useDistance,
+  useGeocoder,
+} from 'react-native-nitro-geocoder'
+```
 
-export function useReverseGeocode() {
-  const [result, setResult] = useState<ReverseGeocodeResult | null>(null)
-  const [loading, setLoading] = useState(false)
+### useReverseGeocode
 
-  const lookup = useCallback(async (lat: number, lon: number, locale = 'en') => {
-    setLoading(true)
-    try {
-      const data = await Geocoder.reverseGeocode(lat, lon, locale)
-      setResult(data)
-      return data
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+```typescript
+function MyComponent() {
+  const { result, error, loading, reverseGeocode, reset } = useReverseGeocode()
 
-  return { result, loading, lookup }
+  const handleLookup = async () => {
+    await reverseGeocode(24.7136, 46.6753, 'en')
+  }
+
+  return (
+    <View>
+      {loading && <ActivityIndicator />}
+      {error && <Text>Error: {error}</Text>}
+      {result && <Text>{result.address}</Text>}
+    </View>
+  )
 }
+```
+
+### useGeocode
+
+```typescript
+const { result, error, loading, geocode, reset } = useGeocode()
+
+await geocode('Riyadh, Saudi Arabia', 'en')
+```
+
+### useGeocodeMultiple
+
+```typescript
+const { results, error, loading, geocodeMultiple, reset } = useGeocodeMultiple()
+
+await geocodeMultiple('Springfield', 5, 'en')
+// results: GeocodeResult[]
+```
+
+### useDistance
+
+```typescript
+const { calculateDistance, calculateDistanceKm } = useDistance()
+
+const meters = calculateDistance(24.7136, 46.6753, 21.4225, 39.8262)
+const km = calculateDistanceKm(24.7136, 46.6753, 21.4225, 39.8262)
+```
+
+### useGeocoder (Combined)
+
+```typescript
+const {
+  isAvailable,
+  geocode,
+  reverseGeocode,
+  geocodeMultiple,
+  calculateDistance,
+  clearCache,
+} = useGeocoder()
 ```
 
 ## License

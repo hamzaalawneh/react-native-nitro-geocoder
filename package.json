@@ -39,7 +39,8 @@
     "clean": "rm -rf android/build node_modules/**/android/build lib",
     "build": "tsc",
     "specs": "tsc --noEmit false && nitrogen --logLevel=\"debug\"",
-    "release": "rm -f *.tgz && yarn specs && yarn && npx nitrogen && yarn build && yarn pack",
+    "sync": "yarn specs && npx nitrogen",
+    "release": "yarn build && yarn publish",
     "prepare": "husky"
   },
   "lint-staged": {
