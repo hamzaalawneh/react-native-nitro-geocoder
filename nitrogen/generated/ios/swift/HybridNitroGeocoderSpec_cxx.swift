@@ -123,53 +123,15 @@ open class HybridNitroGeocoderSpec_cxx {
 
   // Methods
   @inline(__always)
-  public final func geocode(address: std.string, locale: std.string) -> bridge.Result_std__shared_ptr_Promise_GeocodeResult___ {
+  public final func geocode(address: std.string, locale: std.string) -> bridge.Result_std__shared_ptr_Promise_std__vector_GeocoderResult____ {
     do {
       let __result = try self.__implementation.geocode(address: String(address), locale: String(locale))
-      let __resultCpp = { () -> bridge.std__shared_ptr_Promise_GeocodeResult__ in
-        let __promise = bridge.create_std__shared_ptr_Promise_GeocodeResult__()
-        let __promiseHolder = bridge.wrap_std__shared_ptr_Promise_GeocodeResult__(__promise)
+      let __resultCpp = { () -> bridge.std__shared_ptr_Promise_std__vector_GeocoderResult___ in
+        let __promise = bridge.create_std__shared_ptr_Promise_std__vector_GeocoderResult___()
+        let __promiseHolder = bridge.wrap_std__shared_ptr_Promise_std__vector_GeocoderResult___(__promise)
         __result
-          .then({ __result in __promiseHolder.resolve(__result) })
-          .catch({ __error in __promiseHolder.reject(__error.toCpp()) })
-        return __promise
-      }()
-      return bridge.create_Result_std__shared_ptr_Promise_GeocodeResult___(__resultCpp)
-    } catch (let __error) {
-      let __exceptionPtr = __error.toCpp()
-      return bridge.create_Result_std__shared_ptr_Promise_GeocodeResult___(__exceptionPtr)
-    }
-  }
-  
-  @inline(__always)
-  public final func reverseGeocode(latitude: Double, longitude: Double, locale: std.string) -> bridge.Result_std__shared_ptr_Promise_ReverseGeocodeResult___ {
-    do {
-      let __result = try self.__implementation.reverseGeocode(latitude: latitude, longitude: longitude, locale: String(locale))
-      let __resultCpp = { () -> bridge.std__shared_ptr_Promise_ReverseGeocodeResult__ in
-        let __promise = bridge.create_std__shared_ptr_Promise_ReverseGeocodeResult__()
-        let __promiseHolder = bridge.wrap_std__shared_ptr_Promise_ReverseGeocodeResult__(__promise)
-        __result
-          .then({ __result in __promiseHolder.resolve(__result) })
-          .catch({ __error in __promiseHolder.reject(__error.toCpp()) })
-        return __promise
-      }()
-      return bridge.create_Result_std__shared_ptr_Promise_ReverseGeocodeResult___(__resultCpp)
-    } catch (let __error) {
-      let __exceptionPtr = __error.toCpp()
-      return bridge.create_Result_std__shared_ptr_Promise_ReverseGeocodeResult___(__exceptionPtr)
-    }
-  }
-  
-  @inline(__always)
-  public final func geocodeMultiple(address: std.string, maxResults: Double, locale: std.string) -> bridge.Result_std__shared_ptr_Promise_std__vector_GeocodeResult____ {
-    do {
-      let __result = try self.__implementation.geocodeMultiple(address: String(address), maxResults: maxResults, locale: String(locale))
-      let __resultCpp = { () -> bridge.std__shared_ptr_Promise_std__vector_GeocodeResult___ in
-        let __promise = bridge.create_std__shared_ptr_Promise_std__vector_GeocodeResult___()
-        let __promiseHolder = bridge.wrap_std__shared_ptr_Promise_std__vector_GeocodeResult___(__promise)
-        __result
-          .then({ __result in __promiseHolder.resolve({ () -> bridge.std__vector_GeocodeResult_ in
-              var __vector = bridge.create_std__vector_GeocodeResult_(__result.count)
+          .then({ __result in __promiseHolder.resolve({ () -> bridge.std__vector_GeocoderResult_ in
+              var __vector = bridge.create_std__vector_GeocoderResult_(__result.count)
               for __item in __result {
                 __vector.push_back(__item)
               }
@@ -178,10 +140,60 @@ open class HybridNitroGeocoderSpec_cxx {
           .catch({ __error in __promiseHolder.reject(__error.toCpp()) })
         return __promise
       }()
-      return bridge.create_Result_std__shared_ptr_Promise_std__vector_GeocodeResult____(__resultCpp)
+      return bridge.create_Result_std__shared_ptr_Promise_std__vector_GeocoderResult____(__resultCpp)
     } catch (let __error) {
       let __exceptionPtr = __error.toCpp()
-      return bridge.create_Result_std__shared_ptr_Promise_std__vector_GeocodeResult____(__exceptionPtr)
+      return bridge.create_Result_std__shared_ptr_Promise_std__vector_GeocoderResult____(__exceptionPtr)
+    }
+  }
+  
+  @inline(__always)
+  public final func reverseGeocode(latitude: Double, longitude: Double, locale: std.string) -> bridge.Result_std__shared_ptr_Promise_std__vector_GeocoderResult____ {
+    do {
+      let __result = try self.__implementation.reverseGeocode(latitude: latitude, longitude: longitude, locale: String(locale))
+      let __resultCpp = { () -> bridge.std__shared_ptr_Promise_std__vector_GeocoderResult___ in
+        let __promise = bridge.create_std__shared_ptr_Promise_std__vector_GeocoderResult___()
+        let __promiseHolder = bridge.wrap_std__shared_ptr_Promise_std__vector_GeocoderResult___(__promise)
+        __result
+          .then({ __result in __promiseHolder.resolve({ () -> bridge.std__vector_GeocoderResult_ in
+              var __vector = bridge.create_std__vector_GeocoderResult_(__result.count)
+              for __item in __result {
+                __vector.push_back(__item)
+              }
+              return __vector
+            }()) })
+          .catch({ __error in __promiseHolder.reject(__error.toCpp()) })
+        return __promise
+      }()
+      return bridge.create_Result_std__shared_ptr_Promise_std__vector_GeocoderResult____(__resultCpp)
+    } catch (let __error) {
+      let __exceptionPtr = __error.toCpp()
+      return bridge.create_Result_std__shared_ptr_Promise_std__vector_GeocoderResult____(__exceptionPtr)
+    }
+  }
+  
+  @inline(__always)
+  public final func geocodeMultiple(address: std.string, maxResults: Double, locale: std.string) -> bridge.Result_std__shared_ptr_Promise_std__vector_GeocoderResult____ {
+    do {
+      let __result = try self.__implementation.geocodeMultiple(address: String(address), maxResults: maxResults, locale: String(locale))
+      let __resultCpp = { () -> bridge.std__shared_ptr_Promise_std__vector_GeocoderResult___ in
+        let __promise = bridge.create_std__shared_ptr_Promise_std__vector_GeocoderResult___()
+        let __promiseHolder = bridge.wrap_std__shared_ptr_Promise_std__vector_GeocoderResult___(__promise)
+        __result
+          .then({ __result in __promiseHolder.resolve({ () -> bridge.std__vector_GeocoderResult_ in
+              var __vector = bridge.create_std__vector_GeocoderResult_(__result.count)
+              for __item in __result {
+                __vector.push_back(__item)
+              }
+              return __vector
+            }()) })
+          .catch({ __error in __promiseHolder.reject(__error.toCpp()) })
+        return __promise
+      }()
+      return bridge.create_Result_std__shared_ptr_Promise_std__vector_GeocoderResult____(__resultCpp)
+    } catch (let __error) {
+      let __exceptionPtr = __error.toCpp()
+      return bridge.create_Result_std__shared_ptr_Promise_std__vector_GeocoderResult____(__exceptionPtr)
     }
   }
   
@@ -194,17 +206,6 @@ open class HybridNitroGeocoderSpec_cxx {
     } catch (let __error) {
       let __exceptionPtr = __error.toCpp()
       return bridge.create_Result_double_(__exceptionPtr)
-    }
-  }
-  
-  @inline(__always)
-  public final func clearCache() -> bridge.Result_void_ {
-    do {
-      try self.__implementation.clearCache()
-      return bridge.create_Result_void_()
-    } catch (let __error) {
-      let __exceptionPtr = __error.toCpp()
-      return bridge.create_Result_void_(__exceptionPtr)
     }
   }
   

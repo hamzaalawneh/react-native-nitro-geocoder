@@ -8,25 +8,28 @@
 #pragma once
 
 // Forward declarations of C++ defined types
-// Forward declaration of `GeocodeResult` to properly resolve imports.
-namespace margelo::nitro::nitrogeocoder { struct GeocodeResult; }
-// Forward declaration of `GeocodingConfidence` to properly resolve imports.
-namespace margelo::nitro::nitrogeocoder { enum class GeocodingConfidence; }
+// Forward declaration of `GeocoderResult` to properly resolve imports.
+namespace margelo::nitro::nitrogeocoder { struct GeocoderResult; }
 // Forward declaration of `HybridNitroGeocoderSpec` to properly resolve imports.
 namespace margelo::nitro::nitrogeocoder { class HybridNitroGeocoderSpec; }
-// Forward declaration of `ReverseGeocodeResult` to properly resolve imports.
-namespace margelo::nitro::nitrogeocoder { struct ReverseGeocodeResult; }
+// Forward declaration of `Position` to properly resolve imports.
+namespace margelo::nitro::nitrogeocoder { struct Position; }
+// Forward declaration of `Region` to properly resolve imports.
+namespace margelo::nitro::nitrogeocoder { struct Region; }
 
 // Include C++ defined types
-#include "GeocodeResult.hpp"
-#include "GeocodingConfidence.hpp"
+#include "GeocoderResult.hpp"
 #include "HybridNitroGeocoderSpec.hpp"
-#include "ReverseGeocodeResult.hpp"
+#include "Position.hpp"
+#include "Region.hpp"
+#include <NitroModules/Null.hpp>
 #include <NitroModules/Promise.hpp>
 #include <NitroModules/Result.hpp>
 #include <exception>
 #include <memory>
+#include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 // C++ helpers for Swift

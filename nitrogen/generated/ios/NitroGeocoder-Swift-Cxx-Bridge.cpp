@@ -14,10 +14,10 @@
 
 namespace margelo::nitro::nitrogeocoder::bridge::swift {
 
-  // pragma MARK: std::function<void(const GeocodeResult& /* result */)>
-  Func_void_GeocodeResult create_Func_void_GeocodeResult(void* NON_NULL swiftClosureWrapper) noexcept {
-    auto swiftClosure = NitroGeocoder::Func_void_GeocodeResult::fromUnsafe(swiftClosureWrapper);
-    return [swiftClosure = std::move(swiftClosure)](const GeocodeResult& result) mutable -> void {
+  // pragma MARK: std::function<void(const std::vector<GeocoderResult>& /* result */)>
+  Func_void_std__vector_GeocoderResult_ create_Func_void_std__vector_GeocoderResult_(void* NON_NULL swiftClosureWrapper) noexcept {
+    auto swiftClosure = NitroGeocoder::Func_void_std__vector_GeocoderResult_::fromUnsafe(swiftClosureWrapper);
+    return [swiftClosure = std::move(swiftClosure)](const std::vector<GeocoderResult>& result) mutable -> void {
       swiftClosure.call(result);
     };
   }
@@ -27,22 +27,6 @@ namespace margelo::nitro::nitrogeocoder::bridge::swift {
     auto swiftClosure = NitroGeocoder::Func_void_std__exception_ptr::fromUnsafe(swiftClosureWrapper);
     return [swiftClosure = std::move(swiftClosure)](const std::exception_ptr& error) mutable -> void {
       swiftClosure.call(error);
-    };
-  }
-  
-  // pragma MARK: std::function<void(const ReverseGeocodeResult& /* result */)>
-  Func_void_ReverseGeocodeResult create_Func_void_ReverseGeocodeResult(void* NON_NULL swiftClosureWrapper) noexcept {
-    auto swiftClosure = NitroGeocoder::Func_void_ReverseGeocodeResult::fromUnsafe(swiftClosureWrapper);
-    return [swiftClosure = std::move(swiftClosure)](const ReverseGeocodeResult& result) mutable -> void {
-      swiftClosure.call(result);
-    };
-  }
-  
-  // pragma MARK: std::function<void(const std::vector<GeocodeResult>& /* result */)>
-  Func_void_std__vector_GeocodeResult_ create_Func_void_std__vector_GeocodeResult_(void* NON_NULL swiftClosureWrapper) noexcept {
-    auto swiftClosure = NitroGeocoder::Func_void_std__vector_GeocodeResult_::fromUnsafe(swiftClosureWrapper);
-    return [swiftClosure = std::move(swiftClosure)](const std::vector<GeocodeResult>& result) mutable -> void {
-      swiftClosure.call(result);
     };
   }
   

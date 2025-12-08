@@ -13,16 +13,13 @@
 #error NitroModules cannot be found! Are you sure you installed NitroModules properly?
 #endif
 
-// Forward declaration of `GeocodeResult` to properly resolve imports.
-namespace margelo::nitro::nitrogeocoder { struct GeocodeResult; }
-// Forward declaration of `ReverseGeocodeResult` to properly resolve imports.
-namespace margelo::nitro::nitrogeocoder { struct ReverseGeocodeResult; }
+// Forward declaration of `GeocoderResult` to properly resolve imports.
+namespace margelo::nitro::nitrogeocoder { struct GeocoderResult; }
 
-#include "GeocodeResult.hpp"
+#include "GeocoderResult.hpp"
+#include <vector>
 #include <NitroModules/Promise.hpp>
 #include <string>
-#include "ReverseGeocodeResult.hpp"
-#include <vector>
 
 namespace margelo::nitro::nitrogeocoder {
 
@@ -55,11 +52,10 @@ namespace margelo::nitro::nitrogeocoder {
 
     public:
       // Methods
-      virtual std::shared_ptr<Promise<GeocodeResult>> geocode(const std::string& address, const std::string& locale) = 0;
-      virtual std::shared_ptr<Promise<ReverseGeocodeResult>> reverseGeocode(double latitude, double longitude, const std::string& locale) = 0;
-      virtual std::shared_ptr<Promise<std::vector<GeocodeResult>>> geocodeMultiple(const std::string& address, double maxResults, const std::string& locale) = 0;
+      virtual std::shared_ptr<Promise<std::vector<GeocoderResult>>> geocode(const std::string& address, const std::string& locale) = 0;
+      virtual std::shared_ptr<Promise<std::vector<GeocoderResult>>> reverseGeocode(double latitude, double longitude, const std::string& locale) = 0;
+      virtual std::shared_ptr<Promise<std::vector<GeocoderResult>>> geocodeMultiple(const std::string& address, double maxResults, const std::string& locale) = 0;
       virtual double calculateDistance(double lat1, double lon1, double lat2, double lon2) = 0;
-      virtual void clearCache() = 0;
       virtual std::shared_ptr<Promise<std::string>> reverseGeocodeSimple(double latitude, double longitude) = 0;
 
     protected:

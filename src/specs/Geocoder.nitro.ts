@@ -1,64 +1,31 @@
 import { type HybridObject } from 'react-native-nitro-modules'
 
-/**
- * Confidence level for geocoding results
- */
-export type GeocodingConfidence = 'HIGH' | 'MEDIUM' | 'LOW'
-
-/**
- * Result from forward geocoding (address to coordinates)
- */
-export interface GeocodeResult {
-  /** Latitude coordinate */
-  latitude: number
-  /** Longitude coordinate */
-  longitude: number
-  /** Full formatted address (single line) */
-  address: string
-  /** Street name with number */
-  street: string
-  /** District or sub-locality */
-  district: string
-  /** City or locality name */
-  city: string
-  /** State, province, or administrative area */
-  state: string
-  /** Country name */
-  country: string
-  /** ISO country code */
-  countryCode: string
-  /** Postal or ZIP code */
-  postalCode: string
-  /** Confidence level based on address precision */
-  confidence: GeocodingConfidence
+export interface Position {
+  lat: number
+  lng: number
 }
 
-/**
- * Result from reverse geocoding (coordinates to address)
- */
-export interface ReverseGeocodeResult {
-  /** Latitude coordinate used for lookup */
-  latitude: number
-  /** Longitude coordinate used for lookup */
-  longitude: number
-  /** Full formatted address string (single line) */
-  address: string
-  /** Street name with number */
-  street: string
-  /** District or sub-locality */
-  district: string
-  /** City or locality name */
-  city: string
-  /** State, province, or administrative area */
-  state: string
-  /** Country name */
-  country: string
-  /** ISO country code */
-  countryCode: string
-  /** Postal or ZIP code */
+export interface Region {
+  center: Position
+  radius: number
+}
+
+export interface GeocoderResult {
+  position: Position
+  formattedAddress: string
+  featureName: string
+  streetNumber: string
+  streetName: string
   postalCode: string
-  /** Confidence level based on address precision */
-  confidence: GeocodingConfidence
+  city: string
+  country: string
+  countryCode: string
+  state: string
+  subAdminArea: string
+  subLocality: string
+  region: Region | null
+  inlandWater: string
+  ocean: string
 }
 
 /**
@@ -70,19 +37,18 @@ export interface ReverseGeocodeResult {
  *
  * @example
  * ```typescript
- * import { NitroGeocoder } from 'react-native-nitro-geocoder'
+ * import { Geocoder } from 'react-native-nitro-geocoder'
  *
  * // Forward geocoding (address to coordinates)
- * const result = await NitroGeocoder.geocode("Riyadh, Saudi Arabia")
- * console.log(result.latitude, result.longitude)
+ * const results = await Geocoder.geocode("Riyadh, Saudi Arabia", "en")
+ * console.log(results[0].position.lat, results[0].position.lng)
  *
  * // Reverse geocoding (coordinates to address)
- * const address = await NitroGeocoder.reverseGeocode(24.7136, 46.6753)
- * console.log(address.address)
+ * const addresses = await Geocoder.reverseGeocode(24.7136, 46.6753, "en")
+ * console.log(addresses[0].formattedAddress)
  * ```
  */
-export interface NitroGeocoder
-  extends HybridObject<{ ios: 'swift'; android: 'kotlin' }> {
+export interface NitroGeocoder extends HybridObject<{ ios: 'swift'; android: 'kotlin' }> {
   /**
    * Check if geocoding services are available on this device
    *
@@ -97,36 +63,32 @@ export interface NitroGeocoder
    * Convert an address string to geographic coordinates (forward geocoding)
    *
    * @param address - The address string to geocode
-   * @param locale - ISO 639-1 language code (e.g., "en", "ar"). Defaults to "en"
-   * @returns Promise resolving to GeocodeResult with coordinates and parsed address
+   * @param locale - ISO 639-1 language code (e.g., "en", "ar")
+   * @returns Promise resolving to array of GeocoderResult
    * @throws Error if no results found or geocoding fails
    */
-  geocode(address: string, locale: string): Promise<GeocodeResult>
+  geocode(address: string, locale: string): Promise<GeocoderResult[]>
 
   /**
    * Convert geographic coordinates to a human-readable address (reverse geocoding)
    *
    * @param latitude - Latitude in decimal degrees (-90 to 90)
    * @param longitude - Longitude in decimal degrees (-180 to 180)
-   * @param locale - ISO 639-1 language code (e.g., "en", "ar"). Defaults to "en"
-   * @returns Promise resolving to ReverseGeocodeResult with full address details
+   * @param locale - ISO 639-1 language code (e.g., "en", "ar")
+   * @returns Promise resolving to array of GeocoderResult
    * @throws Error if no results found or geocoding fails
    */
-  reverseGeocode(
-    latitude: number,
-    longitude: number,
-    locale: string
-  ): Promise<ReverseGeocodeResult>
+  reverseGeocode(latitude: number, longitude: number, locale: string): Promise<GeocoderResult[]>
 
   /**
    * Get multiple geocoding results for an address
    *
    * @param address - The address string to geocode
    * @param maxResults - Maximum number of results to return (1-10)
-   * @param locale - ISO 639-1 language code (e.g., "en", "ar"). Defaults to "en"
-   * @returns Promise resolving to array of GeocodeResult
+   * @param locale - ISO 639-1 language code (e.g., "en", "ar")
+   * @returns Promise resolving to array of GeocoderResult
    */
-  geocodeMultiple(address: string, maxResults: number, locale: string): Promise<GeocodeResult[]>
+  geocodeMultiple(address: string, maxResults: number, locale: string): Promise<GeocoderResult[]>
 
   /**
    * Calculate the distance between two coordinates in meters
@@ -138,17 +100,7 @@ export interface NitroGeocoder
    * @param lon2 - Longitude of second point
    * @returns Distance in meters
    */
-  calculateDistance(
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number
-  ): number
-
-  /**
-   * Clear the internal geocoding cache
-   */
-  clearCache(): void
+  calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number
 
   /**
    * Simple reverse geocode - returns formatted address string

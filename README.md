@@ -12,41 +12,16 @@ A high-performance native geocoding library for React Native using [Nitro Module
 - **Forward Geocoding**: Convert addresses to coordinates
 - **Reverse Geocoding**: Convert coordinates to addresses
 - **Multiple Results**: Get multiple geocoding suggestions
-- **Built-in Caching**: Automatic caching for repeated queries
 - **Locale Support**: Configurable language for results
 - **Distance Calculation**: Native distance calculation (synchronous)
-- **Confidence Scoring**: HIGH/MEDIUM/LOW based on address precision
 - **Zero Dependencies**: Uses native platform APIs only
   - iOS: `CLGeocoder` (CoreLocation)
   - Android: `android.location.Geocoder`
 
 ## Performance
 
-### Benchmark Results (Real Device)
-
-| Test | Nitro JSI | Old Bridge | Result |
-|------|-----------|------------|--------|
-| Reverse Geocode | ~163ms | ~167ms | **+2.1% faster** |
-| Pure Bridge Speed (10K calls) | 0.64μs | ~5,000μs | **99.9% faster** |
-
-### Why Similar Geocoding Times?
-
-Geocoding is **network-bound** (~160ms to Apple/Google servers). The bridge overhead is negligible:
-
-```
-Network call:      ~160,000μs (97%)
-Nitro JSI bridge:       ~0.6μs (0.0004%)
-Old Bridge:          ~5,000μs (3%)
-```
-
-### Where Nitro JSI Shines
-
-For **synchronous operations** like `calculateDistance`, Nitro is **7,800x faster**:
-
-| Method | Per Call | Calls/Second |
-|--------|----------|--------------|
-| Nitro JSI | 0.64μs | **1,562,500** |
-| Old Bridge | ~5,000μs | ~200 |
+- Geocoding calls are **network-bound** (~160ms to Apple/Google servers)
+- Synchronous operations like `calculateDistance` are extremely fast (~0.6μs per call)
 
 ## Installation
 
@@ -83,15 +58,14 @@ if (Geocoder.isGeocodingAvailable) {
 ### Forward Geocoding (Address to Coordinates)
 
 ```typescript
-const result = await Geocoder.geocode('Riyadh, Saudi Arabia', 'en')
+const results = await Geocoder.geocode('Riyadh, Saudi Arabia', 'en')
+const result = results[0]
 // {
-//   latitude: 24.7136,
-//   longitude: 46.6753,
-//   address: "Riyadh, Riyadh Province, Saudi Arabia",
+//   position: { lat: 24.7136, lng: 46.6753 },
+//   formattedAddress: "Riyadh, Riyadh Province, Saudi Arabia",
 //   city: "Riyadh",
 //   country: "Saudi Arabia",
 //   countryCode: "SA",
-//   confidence: "MEDIUM"
 //   ...
 // }
 ```
@@ -99,10 +73,11 @@ const result = await Geocoder.geocode('Riyadh, Saudi Arabia', 'en')
 ### Reverse Geocoding (Coordinates to Address)
 
 ```typescript
-const result = await Geocoder.reverseGeocode(24.7136, 46.6753, 'en')
-console.log(result.address) // "King Fahd Road, Riyadh, Saudi Arabia"
-console.log(result.city)    // "Riyadh"
-console.log(result.country) // "Saudi Arabia"
+const results = await Geocoder.reverseGeocode(24.7136, 46.6753, 'en')
+const result = results[0]
+console.log(result.formattedAddress) // "King Fahd Road, Riyadh, Saudi Arabia"
+console.log(result.city)             // "Riyadh"
+console.log(result.country)          // "Saudi Arabia"
 ```
 
 ### Multiple Results
@@ -128,21 +103,15 @@ console.log(`Distance: ${(distance / 1000).toFixed(2)} km`) // ~850 km
 ```typescript
 // English
 const en = await Geocoder.reverseGeocode(35.6762, 139.6503, 'en')
-console.log(en.country) // "Japan"
+console.log(en[0].country) // "Japan"
 
 // Arabic
 const ar = await Geocoder.reverseGeocode(24.7136, 46.6753, 'ar')
-console.log(ar.country) // "المملكة العربية السعودية"
+console.log(ar[0].country) // "المملكة العربية السعودية"
 
 // Japanese
 const ja = await Geocoder.reverseGeocode(35.6762, 139.6503, 'ja')
-console.log(ja.country) // "日本"
-```
-
-### Cache Management
-
-```typescript
-Geocoder.clearCache()
+console.log(ja[0].country) // "日本"
 ```
 
 ## API Reference
@@ -151,11 +120,10 @@ Geocoder.clearCache()
 
 | Method | Description |
 |--------|-------------|
-| `geocode(address, locale)` | Address to coordinates |
-| `reverseGeocode(lat, lon, locale)` | Coordinates to address |
+| `geocode(address, locale)` | Address to coordinates (returns array) |
+| `reverseGeocode(lat, lon, locale)` | Coordinates to address (returns array) |
 | `geocodeMultiple(address, maxResults, locale)` | Get multiple results |
 | `calculateDistance(lat1, lon1, lat2, lon2)` | Distance in meters (sync) |
-| `clearCache()` | Clear internal cache |
 
 ### Properties
 
@@ -166,56 +134,32 @@ Geocoder.clearCache()
 ### Types
 
 ```typescript
-interface GeocodeResult {
-  latitude: number
-  longitude: number
-  address: string           // Full formatted address
-  street: string
-  district: string
+interface Position {
+  lat: number
+  lng: number
+}
+
+interface Region {
+  center: Position
+  radius: number
+}
+
+interface GeocoderResult {
+  position: Position
+  formattedAddress: string
+  featureName: string
+  streetNumber: string
+  streetName: string
+  postalCode: string
   city: string
-  state: string
   country: string
   countryCode: string
-  postalCode: string
-  confidence: 'HIGH' | 'MEDIUM' | 'LOW'
-}
-```
-
-## Benchmark Example
-
-Test the pure JSI bridge speed yourself:
-
-```typescript
-import { Geocoder } from 'react-native-nitro-geocoder'
-
-// Pure Bridge Speed Test (no network)
-const testBridgeSpeed = () => {
-  const ITERATIONS = 10000
-
-  const start = performance.now()
-  for (let i = 0; i < ITERATIONS; i++) {
-    Geocoder.calculateDistance(24.7136, 46.6753, 21.4225, 39.8262)
-  }
-  const total = performance.now() - start
-
-  console.log(`${ITERATIONS} calls in ${total.toFixed(2)}ms`)
-  console.log(`Per call: ${((total / ITERATIONS) * 1000).toFixed(2)}μs`)
-}
-
-// Geocoding Speed Test
-const testGeocodingSpeed = async () => {
-  const times: number[] = []
-
-  for (let i = 0; i < 10; i++) {
-    Geocoder.clearCache()
-    const start = performance.now()
-    await Geocoder.reverseGeocode(24.7136, 46.6753, 'en')
-    times.push(performance.now() - start)
-    await new Promise(r => setTimeout(r, 150)) // Avoid rate limit
-  }
-
-  const avg = times.reduce((a, b) => a + b) / times.length
-  console.log(`Average: ${avg.toFixed(2)}ms`)
+  state: string
+  subAdminArea: string
+  subLocality: string
+  region: Region | null
+  inlandWater: string
+  ocean: string
 }
 ```
 
@@ -226,6 +170,7 @@ const testGeocodingSpeed = async () => {
 - iOS 14.0+
 - No API key required
 - Rate limited (~50 req/min)
+- **Important**: iOS does not allow multiple geocoding requests simultaneously. If you send a second request while one is in progress, the first one will be cancelled.
 
 ### Android
 - Uses `android.location.Geocoder`
@@ -251,7 +196,7 @@ import {
 
 ```typescript
 function MyComponent() {
-  const { result, error, loading, reverseGeocode, reset } = useReverseGeocode()
+  const { result, results, error, loading, reverseGeocode, reset } = useReverseGeocode()
 
   const handleLookup = async () => {
     await reverseGeocode(24.7136, 46.6753, 'en')
@@ -261,7 +206,7 @@ function MyComponent() {
     <View>
       {loading && <ActivityIndicator />}
       {error && <Text>Error: {error}</Text>}
-      {result && <Text>{result.address}</Text>}
+      {result && <Text>{result.formattedAddress}</Text>}
     </View>
   )
 }
@@ -270,9 +215,10 @@ function MyComponent() {
 ### useGeocode
 
 ```typescript
-const { result, error, loading, geocode, reset } = useGeocode()
+const { result, results, error, loading, geocode, reset } = useGeocode()
 
 await geocode('Riyadh, Saudi Arabia', 'en')
+// result: first result (convenience), results: all results
 ```
 
 ### useGeocodeMultiple
@@ -281,7 +227,7 @@ await geocode('Riyadh, Saudi Arabia', 'en')
 const { results, error, loading, geocodeMultiple, reset } = useGeocodeMultiple()
 
 await geocodeMultiple('Springfield', 5, 'en')
-// results: GeocodeResult[]
+// results: GeocoderResult[]
 ```
 
 ### useDistance
@@ -302,7 +248,6 @@ const {
   reverseGeocode,
   geocodeMultiple,
   calculateDistance,
-  clearCache,
 } = useGeocoder()
 ```
 

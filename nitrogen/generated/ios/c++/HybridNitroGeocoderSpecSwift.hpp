@@ -12,19 +12,22 @@
 // Forward declaration of `HybridNitroGeocoderSpec_cxx` to properly resolve imports.
 namespace NitroGeocoder { class HybridNitroGeocoderSpec_cxx; }
 
-// Forward declaration of `GeocodeResult` to properly resolve imports.
-namespace margelo::nitro::nitrogeocoder { struct GeocodeResult; }
-// Forward declaration of `GeocodingConfidence` to properly resolve imports.
-namespace margelo::nitro::nitrogeocoder { enum class GeocodingConfidence; }
-// Forward declaration of `ReverseGeocodeResult` to properly resolve imports.
-namespace margelo::nitro::nitrogeocoder { struct ReverseGeocodeResult; }
+// Forward declaration of `GeocoderResult` to properly resolve imports.
+namespace margelo::nitro::nitrogeocoder { struct GeocoderResult; }
+// Forward declaration of `Position` to properly resolve imports.
+namespace margelo::nitro::nitrogeocoder { struct Position; }
+// Forward declaration of `Region` to properly resolve imports.
+namespace margelo::nitro::nitrogeocoder { struct Region; }
 
-#include "GeocodeResult.hpp"
-#include <NitroModules/Promise.hpp>
-#include <string>
-#include "GeocodingConfidence.hpp"
-#include "ReverseGeocodeResult.hpp"
+#include "GeocoderResult.hpp"
 #include <vector>
+#include <NitroModules/Promise.hpp>
+#include "Position.hpp"
+#include <string>
+#include <NitroModules/Null.hpp>
+#include "Region.hpp"
+#include <variant>
+#include <optional>
 
 #include "NitroGeocoder-Swift-Cxx-Umbrella.hpp"
 
@@ -72,7 +75,7 @@ namespace margelo::nitro::nitrogeocoder {
 
   public:
     // Methods
-    inline std::shared_ptr<Promise<GeocodeResult>> geocode(const std::string& address, const std::string& locale) override {
+    inline std::shared_ptr<Promise<std::vector<GeocoderResult>>> geocode(const std::string& address, const std::string& locale) override {
       auto __result = _swiftPart.geocode(address, locale);
       if (__result.hasError()) [[unlikely]] {
         std::rethrow_exception(__result.error());
@@ -80,7 +83,7 @@ namespace margelo::nitro::nitrogeocoder {
       auto __value = std::move(__result.value());
       return __value;
     }
-    inline std::shared_ptr<Promise<ReverseGeocodeResult>> reverseGeocode(double latitude, double longitude, const std::string& locale) override {
+    inline std::shared_ptr<Promise<std::vector<GeocoderResult>>> reverseGeocode(double latitude, double longitude, const std::string& locale) override {
       auto __result = _swiftPart.reverseGeocode(std::forward<decltype(latitude)>(latitude), std::forward<decltype(longitude)>(longitude), locale);
       if (__result.hasError()) [[unlikely]] {
         std::rethrow_exception(__result.error());
@@ -88,7 +91,7 @@ namespace margelo::nitro::nitrogeocoder {
       auto __value = std::move(__result.value());
       return __value;
     }
-    inline std::shared_ptr<Promise<std::vector<GeocodeResult>>> geocodeMultiple(const std::string& address, double maxResults, const std::string& locale) override {
+    inline std::shared_ptr<Promise<std::vector<GeocoderResult>>> geocodeMultiple(const std::string& address, double maxResults, const std::string& locale) override {
       auto __result = _swiftPart.geocodeMultiple(address, std::forward<decltype(maxResults)>(maxResults), locale);
       if (__result.hasError()) [[unlikely]] {
         std::rethrow_exception(__result.error());
@@ -103,12 +106,6 @@ namespace margelo::nitro::nitrogeocoder {
       }
       auto __value = std::move(__result.value());
       return __value;
-    }
-    inline void clearCache() override {
-      auto __result = _swiftPart.clearCache();
-      if (__result.hasError()) [[unlikely]] {
-        std::rethrow_exception(__result.error());
-      }
     }
     inline std::shared_ptr<Promise<std::string>> reverseGeocodeSimple(double latitude, double longitude) override {
       auto __result = _swiftPart.reverseGeocodeSimple(std::forward<decltype(latitude)>(latitude), std::forward<decltype(longitude)>(longitude));

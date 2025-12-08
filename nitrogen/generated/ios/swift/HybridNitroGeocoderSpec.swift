@@ -14,11 +14,10 @@ public protocol HybridNitroGeocoderSpec_protocol: HybridObject {
   var isGeocodingAvailable: Bool { get }
 
   // Methods
-  func geocode(address: String, locale: String) throws -> Promise<GeocodeResult>
-  func reverseGeocode(latitude: Double, longitude: Double, locale: String) throws -> Promise<ReverseGeocodeResult>
-  func geocodeMultiple(address: String, maxResults: Double, locale: String) throws -> Promise<[GeocodeResult]>
+  func geocode(address: String, locale: String) throws -> Promise<[GeocoderResult]>
+  func reverseGeocode(latitude: Double, longitude: Double, locale: String) throws -> Promise<[GeocoderResult]>
+  func geocodeMultiple(address: String, maxResults: Double, locale: String) throws -> Promise<[GeocoderResult]>
   func calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double) throws -> Double
-  func clearCache() throws -> Void
   func reverseGeocodeSimple(latitude: Double, longitude: Double) throws -> Promise<String>
 }
 

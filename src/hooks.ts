@@ -1,12 +1,12 @@
 import { useState, useCallback } from 'react'
 import { Geocoder } from './index'
-import type { GeocodeResult, ReverseGeocodeResult } from './specs/Geocoder.nitro'
+import type { GeocoderResult } from './specs/Geocoder.nitro'
 
 /**
  * Hook for reverse geocoding (coordinates → address)
  */
 export function useReverseGeocode() {
-  const [result, setResult] = useState<ReverseGeocodeResult | null>(null)
+  const [results, setResults] = useState<GeocoderResult[]>([])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -16,11 +16,11 @@ export function useReverseGeocode() {
       setError(null)
       try {
         const data = await Geocoder.reverseGeocode(latitude, longitude, locale)
-        setResult(data)
+        setResults(data)
         return data
       } catch (e: unknown) {
         setError(e instanceof Error ? e.message : 'Unknown error')
-        return null
+        return []
       } finally {
         setLoading(false)
       }
@@ -29,18 +29,20 @@ export function useReverseGeocode() {
   )
 
   const reset = useCallback(() => {
-    setResult(null)
+    setResults([])
     setError(null)
   }, [])
 
-  return { result, error, loading, reverseGeocode, reset }
+  const result = results.length > 0 ? results[0] : null
+
+  return { result, results, error, loading, reverseGeocode, reset }
 }
 
 /**
  * Hook for forward geocoding (address → coordinates)
  */
 export function useGeocode() {
-  const [result, setResult] = useState<GeocodeResult | null>(null)
+  const [results, setResults] = useState<GeocoderResult[]>([])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -49,29 +51,31 @@ export function useGeocode() {
     setError(null)
     try {
       const data = await Geocoder.geocode(address, locale)
-      setResult(data)
+      setResults(data)
       return data
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Unknown error')
-      return null
+      return []
     } finally {
       setLoading(false)
     }
   }, [])
 
   const reset = useCallback(() => {
-    setResult(null)
+    setResults([])
     setError(null)
   }, [])
 
-  return { result, error, loading, geocode, reset }
+  const result = results.length > 0 ? results[0] : null
+
+  return { result, results, error, loading, geocode, reset }
 }
 
 /**
  * Hook for multiple geocoding results
  */
 export function useGeocodeMultiple() {
-  const [results, setResults] = useState<GeocodeResult[]>([])
+  const [results, setResults] = useState<GeocoderResult[]>([])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -150,14 +154,11 @@ export function useGeocoder() {
     []
   )
 
-  const clearCache = useCallback(() => Geocoder.clearCache(), [])
-
   return {
     isAvailable,
     reverseGeocode,
     geocode,
     geocodeMultiple,
     calculateDistance,
-    clearCache,
   }
 }

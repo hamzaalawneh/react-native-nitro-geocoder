@@ -54,11 +54,10 @@ namespace margelo::nitro::nitrogeocoder {
 
   public:
     // Methods
-    std::shared_ptr<Promise<GeocodeResult>> geocode(const std::string& address, const std::string& locale) override;
-    std::shared_ptr<Promise<ReverseGeocodeResult>> reverseGeocode(double latitude, double longitude, const std::string& locale) override;
-    std::shared_ptr<Promise<std::vector<GeocodeResult>>> geocodeMultiple(const std::string& address, double maxResults, const std::string& locale) override;
+    std::shared_ptr<Promise<std::vector<GeocoderResult>>> geocode(const std::string& address, const std::string& locale) override;
+    std::shared_ptr<Promise<std::vector<GeocoderResult>>> reverseGeocode(double latitude, double longitude, const std::string& locale) override;
+    std::shared_ptr<Promise<std::vector<GeocoderResult>>> geocodeMultiple(const std::string& address, double maxResults, const std::string& locale) override;
     double calculateDistance(double lat1, double lon1, double lat2, double lon2) override;
-    void clearCache() override;
     std::shared_ptr<Promise<std::string>> reverseGeocodeSimple(double latitude, double longitude) override;
 
   private:

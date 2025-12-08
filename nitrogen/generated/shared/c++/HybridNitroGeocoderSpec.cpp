@@ -19,7 +19,6 @@ namespace margelo::nitro::nitrogeocoder {
       prototype.registerHybridMethod("reverseGeocode", &HybridNitroGeocoderSpec::reverseGeocode);
       prototype.registerHybridMethod("geocodeMultiple", &HybridNitroGeocoderSpec::geocodeMultiple);
       prototype.registerHybridMethod("calculateDistance", &HybridNitroGeocoderSpec::calculateDistance);
-      prototype.registerHybridMethod("clearCache", &HybridNitroGeocoderSpec::clearCache);
       prototype.registerHybridMethod("reverseGeocodeSimple", &HybridNitroGeocoderSpec::reverseGeocodeSimple);
     });
   }

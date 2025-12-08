@@ -13,8 +13,7 @@ import {
 } from 'react-native'
 import {
   Geocoder,
-  type GeocodeResult,
-  type ReverseGeocodeResult,
+  type GeocoderResult,
 } from 'react-native-nitro-geocoder'
 
 const SAMPLE_LOCATIONS = [
@@ -31,7 +30,7 @@ export default function App() {
   const [longitude, setLongitude] = useState('46.6753')
   const [locale, setLocale] = useState('en')
   const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<GeocodeResult | ReverseGeocodeResult | null>(null)
+  const [result, setResult] = useState<GeocoderResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [distance, setDistance] = useState<number | null>(null)
 
@@ -45,7 +44,7 @@ export default function App() {
 
     try {
       const data = await Geocoder.geocode(address, locale)
-      setResult(data)
+      setResult(data[0] ?? null)
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Unknown error')
     } finally {
@@ -67,7 +66,7 @@ export default function App() {
 
     try {
       const data = await Geocoder.reverseGeocode(lat, lon, locale)
-      setResult(data)
+      setResult(data[0] ?? null)
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Unknown error')
     } finally {
@@ -203,13 +202,13 @@ export default function App() {
 
             <View style={styles.resultRow}>
               <Text style={styles.resultLabel}>Address:</Text>
-              <Text style={styles.resultValue}>{result.address}</Text>
+              <Text style={styles.resultValue}>{result.formattedAddress}</Text>
             </View>
 
             <View style={styles.resultRow}>
               <Text style={styles.resultLabel}>Coordinates:</Text>
               <Text style={styles.resultValue}>
-                {result.latitude.toFixed(6)}, {result.longitude.toFixed(6)}
+                {result.position.lat.toFixed(6)}, {result.position.lng.toFixed(6)}
               </Text>
             </View>
 
@@ -228,13 +227,6 @@ export default function App() {
                 </Text>
               </View>
             )}
-
-            <View style={styles.resultRow}>
-              <Text style={styles.resultLabel}>Confidence:</Text>
-              <Text style={[styles.resultValue, styles.confidenceBadge]}>
-                {result.confidence}
-              </Text>
-            </View>
 
             <Text style={styles.rawTitle}>Raw Response:</Text>
             <Text style={styles.rawJson}>{JSON.stringify(result, null, 2)}</Text>
@@ -394,10 +386,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 12,
     color: '#333',
-  },
-  confidenceBadge: {
-    fontWeight: '600',
-    color: '#2e7d32',
   },
   rawTitle: {
     fontSize: 12,

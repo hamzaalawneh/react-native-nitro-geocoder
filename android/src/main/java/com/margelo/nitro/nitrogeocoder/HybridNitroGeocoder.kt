@@ -5,7 +5,6 @@ import android.location.Geocoder
 import com.facebook.proguard.annotations.DoNotStrip
 import com.margelo.nitro.NitroModules
 import com.margelo.nitro.core.Promise
-import java.util.Locale
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
@@ -18,105 +17,98 @@ class HybridNitroGeocoder : HybridNitroGeocoderSpec() {
         get() = NitroModules.applicationContext
             ?: throw RuntimeException("Application context not available")
 
-    private val geocoderCache = mutableMapOf<String, Geocoder>()
-    private val resultCache = mutableMapOf<String, Any>()
-
-    private fun getGeocoder(locale: String): Geocoder {
-        return geocoderCache.getOrPut(locale) {
-            Geocoder(context, Locale(locale))
+    private var _geocoder: Geocoder? = null
+    @Suppress("DEPRECATION")
+    private val geocoder: Geocoder
+        get() {
+            if (_geocoder == null) {
+                val locale = context.resources.configuration.locale
+                _geocoder = Geocoder(context, locale)
+            }
+            return _geocoder!!
         }
-    }
 
     override val isGeocodingAvailable: Boolean
         get() = Geocoder.isPresent()
 
+    private fun buildGeocoderResult(addr: Address, lat: Double? = null, lon: Double? = null): GeocoderResult {
+        val sb = StringBuilder()
+        for (i in 0..addr.maxAddressLineIndex) {
+            if (i > 0) sb.append(", ")
+            sb.append(addr.getAddressLine(i))
+        }
+
+        val name = addr.featureName
+        val featureName = if (name != null &&
+            name != addr.subThoroughfare &&
+            name != addr.thoroughfare &&
+            name != addr.locality) {
+            name
+        } else {
+            ""
+        }
+
+        return GeocoderResult(
+            position = Position(lat = lat ?: addr.latitude, lng = lon ?: addr.longitude),
+            formattedAddress = sb.toString(),
+            featureName = featureName,
+            streetNumber = addr.subThoroughfare ?: "",
+            streetName = addr.thoroughfare ?: "",
+            postalCode = addr.postalCode ?: "",
+            city = addr.locality ?: "",
+            country = addr.countryName ?: "",
+            countryCode = addr.countryCode ?: "",
+            state = addr.adminArea ?: "",
+            subAdminArea = addr.subAdminArea ?: "",
+            subLocality = addr.subLocality ?: "",
+            region = null,
+            inlandWater = "",
+            ocean = ""
+        )
+    }
+
     @Suppress("DEPRECATION")
-    override fun geocode(address: String, locale: String): Promise<GeocodeResult> {
+    override fun geocode(address: String, locale: String): Promise<Array<GeocoderResult>> {
         return Promise.async {
-            val cacheKey = "f:$locale:$address"
-            resultCache[cacheKey]?.let {
-                @Suppress("UNCHECKED_CAST")
-                return@async it as GeocodeResult
+            if (!Geocoder.isPresent()) {
+                throw Exception("Geocoder not available")
             }
 
-            val addr = getGeocoder(locale).getFromLocationName(address, 1)?.firstOrNull()
-                ?: throw Exception("No results found for address: $address")
+            val addresses = geocoder.getFromLocationName(address, 20)
+            if (addresses.isNullOrEmpty()) {
+                throw Exception("No results found for address: $address")
+            }
 
-            val sub = addr.subThoroughfare
-            val main = addr.thoroughfare
-            val result = GeocodeResult(
-                latitude = addr.latitude,
-                longitude = addr.longitude,
-                address = addr.getAddressLine(0) ?: "",
-                street = if (sub != null && main != null) "$sub $main" else main ?: sub ?: "",
-                district = addr.subLocality ?: "",
-                city = addr.locality ?: "",
-                state = addr.adminArea ?: "",
-                country = addr.countryName ?: "",
-                countryCode = addr.countryCode ?: "",
-                postalCode = addr.postalCode ?: "",
-                confidence = if (sub != null) GeocodingConfidence.HIGH else if (main != null) GeocodingConfidence.MEDIUM else GeocodingConfidence.LOW
-            )
-            resultCache[cacheKey] = result
-            result
+            addresses.map { buildGeocoderResult(it) }.toTypedArray()
         }
     }
 
     @Suppress("DEPRECATION")
-    override fun reverseGeocode(latitude: Double, longitude: Double, locale: String): Promise<ReverseGeocodeResult> {
+    override fun reverseGeocode(latitude: Double, longitude: Double, locale: String): Promise<Array<GeocoderResult>> {
         return Promise.async {
-            val cacheKey = "r:$locale:$latitude,$longitude"
-            resultCache[cacheKey]?.let {
-                @Suppress("UNCHECKED_CAST")
-                return@async it as ReverseGeocodeResult
+            if (!Geocoder.isPresent()) {
+                throw Exception("Geocoder not available")
             }
 
-            val addr = getGeocoder(locale).getFromLocation(latitude, longitude, 1)?.firstOrNull()
-                ?: throw Exception("No results found for coordinates: $latitude, $longitude")
+            val addresses = geocoder.getFromLocation(latitude, longitude, 20)
+            if (addresses.isNullOrEmpty()) {
+                throw Exception("No results found for coordinates: $latitude, $longitude")
+            }
 
-            val sub = addr.subThoroughfare
-            val main = addr.thoroughfare
-            val result = ReverseGeocodeResult(
-                latitude = latitude,
-                longitude = longitude,
-                address = addr.getAddressLine(0) ?: "",
-                street = if (sub != null && main != null) "$sub $main" else main ?: sub ?: "",
-                district = addr.subLocality ?: "",
-                city = addr.locality ?: "",
-                state = addr.adminArea ?: "",
-                country = addr.countryName ?: "",
-                countryCode = addr.countryCode ?: "",
-                postalCode = addr.postalCode ?: "",
-                confidence = if (sub != null) GeocodingConfidence.HIGH else if (main != null) GeocodingConfidence.MEDIUM else GeocodingConfidence.LOW
-            )
-            resultCache[cacheKey] = result
-            result
+            addresses.map { buildGeocoderResult(it, latitude, longitude) }.toTypedArray()
         }
     }
 
     @Suppress("DEPRECATION")
-    override fun geocodeMultiple(address: String, maxResults: Double, locale: String): Promise<Array<GeocodeResult>> {
+    override fun geocodeMultiple(address: String, maxResults: Double, locale: String): Promise<Array<GeocoderResult>> {
         return Promise.async {
-            val limit = maxResults.toInt().coerceIn(1, 10)
-            val results = getGeocoder(locale).getFromLocationName(address, limit) ?: emptyList()
+            if (!Geocoder.isPresent()) {
+                throw Exception("Geocoder not available")
+            }
 
-            results.map { addr ->
-                val sub = addr.subThoroughfare
-                val main = addr.thoroughfare
-                GeocodeResult(
-                    latitude = addr.latitude,
-                    longitude = addr.longitude,
-                    address = addr.getAddressLine(0) ?: "",
-                    street = if (sub != null && main != null) "$sub $main" else main ?: sub ?: "",
-                    district = addr.subLocality ?: "",
-                    city = addr.locality ?: "",
-                    state = addr.adminArea ?: "",
-                    country = addr.countryName ?: "",
-                    countryCode = addr.countryCode ?: "",
-                    postalCode = addr.postalCode ?: "",
-                    confidence = if (sub != null) GeocodingConfidence.HIGH else if (main != null) GeocodingConfidence.MEDIUM else GeocodingConfidence.LOW
-                )
-            }.toTypedArray()
+            val limit = maxResults.toInt().coerceIn(1, 20)
+            val addresses = geocoder.getFromLocationName(address, limit) ?: emptyList()
+            addresses.map { buildGeocoderResult(it) }.toTypedArray()
         }
     }
 
@@ -126,18 +118,17 @@ class HybridNitroGeocoder : HybridNitroGeocoderSpec() {
         val a = sin(dLat / 2) * sin(dLat / 2) +
                 cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) *
                 sin(dLon / 2) * sin(dLon / 2)
-        return 6371000.0 * 2 * atan2(sqrt(a), sqrt(1 - a))
-    }
-
-    override fun clearCache() {
-        resultCache.clear()
+        return 6371000.0 * 2 * atan2(kotlin.math.sqrt(a), kotlin.math.sqrt(1 - a))
     }
 
     @Suppress("DEPRECATION")
     override fun reverseGeocodeSimple(latitude: Double, longitude: Double): Promise<String> {
         return Promise.async {
-            val geocoder = Geocoder(context)
-            val addr = geocoder.getFromLocation(latitude, longitude, 1)?.firstOrNull()
+            if (!Geocoder.isPresent()) {
+                throw Exception("Geocoder not available")
+            }
+
+            val addr = geocoder.getFromLocation(latitude, longitude, 20)?.firstOrNull()
                 ?: throw Exception("No result found")
 
             listOfNotNull(

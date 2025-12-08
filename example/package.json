@@ -14,8 +14,8 @@
   "dependencies": {
     "react": "19.1.1",
     "react-native": "0.82.1",
-    "react-native-nitro-modules": "*",
-    "react-native-nitro-geocoder": "link:.."
+    "react-native-nitro-geocoder": "link:..",
+    "react-native-nitro-modules": "*"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

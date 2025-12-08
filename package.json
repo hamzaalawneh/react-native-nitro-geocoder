@@ -1,6 +1,6 @@
 {
   "name": "react-native-nitro-geocoder",
-  "version": "0.1.0-beta.4",
+  "version": "1.0.0",
   "description": "High-performance native geocoding for React Native using Nitro Modules JSI",
   "main": "lib/index",
   "module": "lib/index",

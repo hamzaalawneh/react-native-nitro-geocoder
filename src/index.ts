@@ -1,10 +1,5 @@
 import { NitroModules } from 'react-native-nitro-modules'
-import type {
-  NitroGeocoder,
-  GeocodeResult,
-  ReverseGeocodeResult,
-  GeocodingConfidence,
-} from './specs/Geocoder.nitro'
+import type { NitroGeocoder, GeocoderResult, Position, Region } from './specs/Geocoder.nitro'
 
 export function createGeocoder(): NitroGeocoder {
   return NitroModules.createHybridObject<NitroGeocoder>('NitroGeocoder')
@@ -12,7 +7,7 @@ export function createGeocoder(): NitroGeocoder {
 
 export const Geocoder: NitroGeocoder = createGeocoder()
 
-export type { NitroGeocoder, GeocodeResult, ReverseGeocodeResult, GeocodingConfidence }
+export type { NitroGeocoder, GeocoderResult, Position, Region }
 
 export {
   useReverseGeocode,
