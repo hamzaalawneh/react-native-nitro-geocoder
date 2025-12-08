@@ -20,7 +20,6 @@ namespace margelo::nitro::nitrogeocoder { struct Position; }
 namespace margelo::nitro::nitrogeocoder { struct Region; }
 
 #include "GeocoderResult.hpp"
-#include <vector>
 #include <NitroModules/Promise.hpp>
 #include "Position.hpp"
 #include <string>
@@ -28,6 +27,7 @@ namespace margelo::nitro::nitrogeocoder { struct Region; }
 #include "Region.hpp"
 #include <variant>
 #include <optional>
+#include <vector>
 
 #include "NitroGeocoder-Swift-Cxx-Umbrella.hpp"
 
@@ -75,7 +75,7 @@ namespace margelo::nitro::nitrogeocoder {
 
   public:
     // Methods
-    inline std::shared_ptr<Promise<std::vector<GeocoderResult>>> geocode(const std::string& address, const std::string& locale) override {
+    inline std::shared_ptr<Promise<GeocoderResult>> geocode(const std::string& address, const std::string& locale) override {
       auto __result = _swiftPart.geocode(address, locale);
       if (__result.hasError()) [[unlikely]] {
         std::rethrow_exception(__result.error());
@@ -83,7 +83,7 @@ namespace margelo::nitro::nitrogeocoder {
       auto __value = std::move(__result.value());
       return __value;
     }
-    inline std::shared_ptr<Promise<std::vector<GeocoderResult>>> reverseGeocode(double latitude, double longitude, const std::string& locale) override {
+    inline std::shared_ptr<Promise<GeocoderResult>> reverseGeocode(double latitude, double longitude, const std::string& locale) override {
       auto __result = _swiftPart.reverseGeocode(std::forward<decltype(latitude)>(latitude), std::forward<decltype(longitude)>(longitude), locale);
       if (__result.hasError()) [[unlikely]] {
         std::rethrow_exception(__result.error());

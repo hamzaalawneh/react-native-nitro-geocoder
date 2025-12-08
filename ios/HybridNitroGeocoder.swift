@@ -17,6 +17,13 @@ class HybridNitroGeocoder: HybridNitroGeocoderSpec {
         return _geocoder!
     }
 
+    private func getLocale(_ locale: String) -> Locale {
+        if locale.isEmpty {
+            return Locale.current
+        }
+        return Locale(identifier: locale)
+    }
+
     var isGeocodingAvailable: Bool {
         CLLocationManager.locationServicesEnabled()
     }
@@ -27,74 +34,63 @@ class HybridNitroGeocoder: HybridNitroGeocoderSpec {
 
         guard let lat = latitude, let lng = longitude else { return nil }
 
-        var featureName: String? = nil
-        if let name = p.name,
-           name != p.locality,
-           name != p.thoroughfare,
-           name != p.subThoroughfare {
-            featureName = name
+        // Combine street number and name
+        var street = ""
+        if let num = p.subThoroughfare, let name = p.thoroughfare {
+            street = "\(num) \(name)"
+        } else if let name = p.thoroughfare {
+            street = name
+        } else if let num = p.subThoroughfare {
+            street = num
         }
 
         return GeocoderResult(
-            position: Position(lat: lat, lng: lng),
+            position: Position(latitude: lat, longitude: lng),
             formattedAddress: (p.addressDictionary?["FormattedAddressLines"] as? [String])?.joined(separator: ", ") ?? "",
-            featureName: featureName ?? "",
-            streetNumber: p.subThoroughfare ?? "",
-            streetName: p.thoroughfare ?? "",
-            postalCode: p.postalCode ?? "",
+            street: street,
             city: p.locality ?? "",
-            country: p.country ?? "",
-            countryCode: p.isoCountryCode ?? "",
             state: p.administrativeArea ?? "",
             subAdminArea: p.subAdministrativeArea ?? "",
             subLocality: p.subLocality ?? "",
+            country: p.country ?? "",
+            countryCode: p.isoCountryCode ?? "",
+            postalCode: p.postalCode ?? "",
             region: (p.region as? CLCircularRegion).map { region in
                 .second(Region(
-                    center: Position(lat: region.center.latitude, lng: region.center.longitude),
+                    center: Position(latitude: region.center.latitude, longitude: region.center.longitude),
                     radius: region.radius
                 ))
-            },
-            inlandWater: p.inlandWater ?? "",
-            ocean: p.ocean ?? ""
+            }
         )
     }
 
-    func geocode(address: String, locale: String) throws -> Promise<[GeocoderResult]> {
-        let promise = Promise<[GeocoderResult]>()
+    func geocode(address: String, locale: String) throws -> Promise<GeocoderResult> {
+        let promise = Promise<GeocoderResult>()
 
         if geocoder.isGeocoding {
             geocoder.cancelGeocode()
         }
 
-        geocoder.geocodeAddressString(address) { placemarks, error in
+        geocoder.geocodeAddressString(address, in: nil, preferredLocale: getLocale(locale)) { placemarks, error in
             if error != nil {
-                if placemarks?.count == 0 {
-                    promise.reject(withError: RuntimeError.error(withMessage: "No results found"))
-                } else {
-                    promise.reject(withError: RuntimeError.error(withMessage: "Geocode failed"))
-                }
+                promise.reject(withError: RuntimeError.error(withMessage: "Geocode failed"))
                 return
             }
 
-            guard let pms = placemarks, !pms.isEmpty else {
+            guard let p = placemarks?.first,
+                  let result = self.buildGeocoderResult(from: p) else {
                 promise.reject(withError: RuntimeError.error(withMessage: "No results found"))
                 return
             }
 
-            var results = [GeocoderResult]()
-            for p in pms {
-                if let result = self.buildGeocoderResult(from: p) {
-                    results.append(result)
-                }
-            }
-            promise.resolve(withResult: results)
+            promise.resolve(withResult: result)
         }
 
         return promise
     }
 
-    func reverseGeocode(latitude: Double, longitude: Double, locale: String) throws -> Promise<[GeocoderResult]> {
-        let promise = Promise<[GeocoderResult]>()
+    func reverseGeocode(latitude: Double, longitude: Double, locale: String) throws -> Promise<GeocoderResult> {
+        let promise = Promise<GeocoderResult>()
 
         if geocoder.isGeocoding {
             geocoder.cancelGeocode()
@@ -102,28 +98,19 @@ class HybridNitroGeocoder: HybridNitroGeocoderSpec {
 
         let location = CLLocation(latitude: latitude, longitude: longitude)
 
-        geocoder.reverseGeocodeLocation(location, preferredLocale: NSLocale.current) { placemarks, error in
+        geocoder.reverseGeocodeLocation(location, preferredLocale: getLocale(locale)) { placemarks, error in
             if error != nil {
-                if placemarks?.count == 0 {
-                    promise.reject(withError: RuntimeError.error(withMessage: "No results found"))
-                } else {
-                    promise.reject(withError: RuntimeError.error(withMessage: "Geocode failed"))
-                }
+                promise.reject(withError: RuntimeError.error(withMessage: "Geocode failed"))
                 return
             }
 
-            guard let pms = placemarks, !pms.isEmpty else {
+            guard let p = placemarks?.first,
+                  let result = self.buildGeocoderResult(from: p, lat: latitude, lng: longitude) else {
                 promise.reject(withError: RuntimeError.error(withMessage: "No results found"))
                 return
             }
 
-            var results = [GeocoderResult]()
-            for p in pms {
-                if let result = self.buildGeocoderResult(from: p, lat: latitude, lng: longitude) {
-                    results.append(result)
-                }
-            }
-            promise.resolve(withResult: results)
+            promise.resolve(withResult: result)
         }
 
         return promise
@@ -137,7 +124,7 @@ class HybridNitroGeocoder: HybridNitroGeocoderSpec {
             geocoder.cancelGeocode()
         }
 
-        geocoder.geocodeAddressString(address) { placemarks, error in
+        geocoder.geocodeAddressString(address, in: nil, preferredLocale: getLocale(locale)) { placemarks, error in
             if error != nil {
                 promise.reject(withError: RuntimeError.error(withMessage: "Geocode failed"))
                 return

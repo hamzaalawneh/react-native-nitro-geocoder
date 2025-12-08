@@ -14,10 +14,10 @@
 
 namespace margelo::nitro::nitrogeocoder::bridge::swift {
 
-  // pragma MARK: std::function<void(const std::vector<GeocoderResult>& /* result */)>
-  Func_void_std__vector_GeocoderResult_ create_Func_void_std__vector_GeocoderResult_(void* NON_NULL swiftClosureWrapper) noexcept {
-    auto swiftClosure = NitroGeocoder::Func_void_std__vector_GeocoderResult_::fromUnsafe(swiftClosureWrapper);
-    return [swiftClosure = std::move(swiftClosure)](const std::vector<GeocoderResult>& result) mutable -> void {
+  // pragma MARK: std::function<void(const GeocoderResult& /* result */)>
+  Func_void_GeocoderResult create_Func_void_GeocoderResult(void* NON_NULL swiftClosureWrapper) noexcept {
+    auto swiftClosure = NitroGeocoder::Func_void_GeocoderResult::fromUnsafe(swiftClosureWrapper);
+    return [swiftClosure = std::move(swiftClosure)](const GeocoderResult& result) mutable -> void {
       swiftClosure.call(result);
     };
   }
@@ -27,6 +27,14 @@ namespace margelo::nitro::nitrogeocoder::bridge::swift {
     auto swiftClosure = NitroGeocoder::Func_void_std__exception_ptr::fromUnsafe(swiftClosureWrapper);
     return [swiftClosure = std::move(swiftClosure)](const std::exception_ptr& error) mutable -> void {
       swiftClosure.call(error);
+    };
+  }
+  
+  // pragma MARK: std::function<void(const std::vector<GeocoderResult>& /* result */)>
+  Func_void_std__vector_GeocoderResult_ create_Func_void_std__vector_GeocoderResult_(void* NON_NULL swiftClosureWrapper) noexcept {
+    auto swiftClosure = NitroGeocoder::Func_void_std__vector_GeocoderResult_::fromUnsafe(swiftClosureWrapper);
+    return [swiftClosure = std::move(swiftClosure)](const std::vector<GeocoderResult>& result) mutable -> void {
+      swiftClosure.call(result);
     };
   }
   

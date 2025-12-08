@@ -50,11 +50,11 @@ abstract class HybridNitroGeocoderSpec: HybridObject() {
   // Methods
   @DoNotStrip
   @Keep
-  abstract fun geocode(address: String, locale: String): Promise<Array<GeocoderResult>>
+  abstract fun geocode(address: String, locale: String): Promise<GeocoderResult>
   
   @DoNotStrip
   @Keep
-  abstract fun reverseGeocode(latitude: Double, longitude: Double, locale: String): Promise<Array<GeocoderResult>>
+  abstract fun reverseGeocode(latitude: Double, longitude: Double, locale: String): Promise<GeocoderResult>
   
   @DoNotStrip
   @Keep

@@ -88,6 +88,62 @@ namespace margelo::nitro::nitrogeocoder::bridge::swift {
     return *optional;
   }
   
+  // pragma MARK: std::shared_ptr<Promise<GeocoderResult>>
+  /**
+   * Specialized version of `std::shared_ptr<Promise<GeocoderResult>>`.
+   */
+  using std__shared_ptr_Promise_GeocoderResult__ = std::shared_ptr<Promise<GeocoderResult>>;
+  inline std::shared_ptr<Promise<GeocoderResult>> create_std__shared_ptr_Promise_GeocoderResult__() noexcept {
+    return Promise<GeocoderResult>::create();
+  }
+  inline PromiseHolder<GeocoderResult> wrap_std__shared_ptr_Promise_GeocoderResult__(std::shared_ptr<Promise<GeocoderResult>> promise) noexcept {
+    return PromiseHolder<GeocoderResult>(std::move(promise));
+  }
+  
+  // pragma MARK: std::function<void(const GeocoderResult& /* result */)>
+  /**
+   * Specialized version of `std::function<void(const GeocoderResult&)>`.
+   */
+  using Func_void_GeocoderResult = std::function<void(const GeocoderResult& /* result */)>;
+  /**
+   * Wrapper class for a `std::function<void(const GeocoderResult& / * result * /)>`, this can be used from Swift.
+   */
+  class Func_void_GeocoderResult_Wrapper final {
+  public:
+    explicit Func_void_GeocoderResult_Wrapper(std::function<void(const GeocoderResult& /* result */)>&& func): _function(std::make_unique<std::function<void(const GeocoderResult& /* result */)>>(std::move(func))) {}
+    inline void call(GeocoderResult result) const noexcept {
+      _function->operator()(result);
+    }
+  private:
+    std::unique_ptr<std::function<void(const GeocoderResult& /* result */)>> _function;
+  } SWIFT_NONCOPYABLE;
+  Func_void_GeocoderResult create_Func_void_GeocoderResult(void* NON_NULL swiftClosureWrapper) noexcept;
+  inline Func_void_GeocoderResult_Wrapper wrap_Func_void_GeocoderResult(Func_void_GeocoderResult value) noexcept {
+    return Func_void_GeocoderResult_Wrapper(std::move(value));
+  }
+  
+  // pragma MARK: std::function<void(const std::exception_ptr& /* error */)>
+  /**
+   * Specialized version of `std::function<void(const std::exception_ptr&)>`.
+   */
+  using Func_void_std__exception_ptr = std::function<void(const std::exception_ptr& /* error */)>;
+  /**
+   * Wrapper class for a `std::function<void(const std::exception_ptr& / * error * /)>`, this can be used from Swift.
+   */
+  class Func_void_std__exception_ptr_Wrapper final {
+  public:
+    explicit Func_void_std__exception_ptr_Wrapper(std::function<void(const std::exception_ptr& /* error */)>&& func): _function(std::make_unique<std::function<void(const std::exception_ptr& /* error */)>>(std::move(func))) {}
+    inline void call(std::exception_ptr error) const noexcept {
+      _function->operator()(error);
+    }
+  private:
+    std::unique_ptr<std::function<void(const std::exception_ptr& /* error */)>> _function;
+  } SWIFT_NONCOPYABLE;
+  Func_void_std__exception_ptr create_Func_void_std__exception_ptr(void* NON_NULL swiftClosureWrapper) noexcept;
+  inline Func_void_std__exception_ptr_Wrapper wrap_Func_void_std__exception_ptr(Func_void_std__exception_ptr value) noexcept {
+    return Func_void_std__exception_ptr_Wrapper(std::move(value));
+  }
+  
   // pragma MARK: std::vector<GeocoderResult>
   /**
    * Specialized version of `std::vector<GeocoderResult>`.
@@ -131,28 +187,6 @@ namespace margelo::nitro::nitrogeocoder::bridge::swift {
   Func_void_std__vector_GeocoderResult_ create_Func_void_std__vector_GeocoderResult_(void* NON_NULL swiftClosureWrapper) noexcept;
   inline Func_void_std__vector_GeocoderResult__Wrapper wrap_Func_void_std__vector_GeocoderResult_(Func_void_std__vector_GeocoderResult_ value) noexcept {
     return Func_void_std__vector_GeocoderResult__Wrapper(std::move(value));
-  }
-  
-  // pragma MARK: std::function<void(const std::exception_ptr& /* error */)>
-  /**
-   * Specialized version of `std::function<void(const std::exception_ptr&)>`.
-   */
-  using Func_void_std__exception_ptr = std::function<void(const std::exception_ptr& /* error */)>;
-  /**
-   * Wrapper class for a `std::function<void(const std::exception_ptr& / * error * /)>`, this can be used from Swift.
-   */
-  class Func_void_std__exception_ptr_Wrapper final {
-  public:
-    explicit Func_void_std__exception_ptr_Wrapper(std::function<void(const std::exception_ptr& /* error */)>&& func): _function(std::make_unique<std::function<void(const std::exception_ptr& /* error */)>>(std::move(func))) {}
-    inline void call(std::exception_ptr error) const noexcept {
-      _function->operator()(error);
-    }
-  private:
-    std::unique_ptr<std::function<void(const std::exception_ptr& /* error */)>> _function;
-  } SWIFT_NONCOPYABLE;
-  Func_void_std__exception_ptr create_Func_void_std__exception_ptr(void* NON_NULL swiftClosureWrapper) noexcept;
-  inline Func_void_std__exception_ptr_Wrapper wrap_Func_void_std__exception_ptr(Func_void_std__exception_ptr value) noexcept {
-    return Func_void_std__exception_ptr_Wrapper(std::move(value));
   }
   
   // pragma MARK: std::shared_ptr<Promise<std::string>>
@@ -200,6 +234,15 @@ namespace margelo::nitro::nitrogeocoder::bridge::swift {
   // pragma MARK: std::weak_ptr<HybridNitroGeocoderSpec>
   using std__weak_ptr_HybridNitroGeocoderSpec_ = std::weak_ptr<HybridNitroGeocoderSpec>;
   inline std__weak_ptr_HybridNitroGeocoderSpec_ weakify_std__shared_ptr_HybridNitroGeocoderSpec_(const std::shared_ptr<HybridNitroGeocoderSpec>& strong) noexcept { return strong; }
+  
+  // pragma MARK: Result<std::shared_ptr<Promise<GeocoderResult>>>
+  using Result_std__shared_ptr_Promise_GeocoderResult___ = Result<std::shared_ptr<Promise<GeocoderResult>>>;
+  inline Result_std__shared_ptr_Promise_GeocoderResult___ create_Result_std__shared_ptr_Promise_GeocoderResult___(const std::shared_ptr<Promise<GeocoderResult>>& value) noexcept {
+    return Result<std::shared_ptr<Promise<GeocoderResult>>>::withValue(value);
+  }
+  inline Result_std__shared_ptr_Promise_GeocoderResult___ create_Result_std__shared_ptr_Promise_GeocoderResult___(const std::exception_ptr& error) noexcept {
+    return Result<std::shared_ptr<Promise<GeocoderResult>>>::withError(error);
+  }
   
   // pragma MARK: Result<std::shared_ptr<Promise<std::vector<GeocoderResult>>>>
   using Result_std__shared_ptr_Promise_std__vector_GeocoderResult____ = Result<std::shared_ptr<Promise<std::vector<GeocoderResult>>>>;

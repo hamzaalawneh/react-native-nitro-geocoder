@@ -25,25 +25,10 @@ data class GeocoderResult(
   val formattedAddress: String,
   @DoNotStrip
   @Keep
-  val featureName: String,
-  @DoNotStrip
-  @Keep
-  val streetNumber: String,
-  @DoNotStrip
-  @Keep
-  val streetName: String,
-  @DoNotStrip
-  @Keep
-  val postalCode: String,
+  val street: String,
   @DoNotStrip
   @Keep
   val city: String,
-  @DoNotStrip
-  @Keep
-  val country: String,
-  @DoNotStrip
-  @Keep
-  val countryCode: String,
   @DoNotStrip
   @Keep
   val state: String,
@@ -55,13 +40,16 @@ data class GeocoderResult(
   val subLocality: String,
   @DoNotStrip
   @Keep
-  val region: Variant_NullType_Region?,
+  val country: String,
   @DoNotStrip
   @Keep
-  val inlandWater: String,
+  val countryCode: String,
   @DoNotStrip
   @Keep
-  val ocean: String
+  val postalCode: String,
+  @DoNotStrip
+  @Keep
+  val region: Variant_NullType_Region?
 ) {
   /* primary constructor */
 
@@ -73,8 +61,8 @@ data class GeocoderResult(
     @Keep
     @Suppress("unused")
     @JvmStatic
-    private fun fromCpp(position: Position, formattedAddress: String, featureName: String, streetNumber: String, streetName: String, postalCode: String, city: String, country: String, countryCode: String, state: String, subAdminArea: String, subLocality: String, region: Variant_NullType_Region?, inlandWater: String, ocean: String): GeocoderResult {
-      return GeocoderResult(position, formattedAddress, featureName, streetNumber, streetName, postalCode, city, country, countryCode, state, subAdminArea, subLocality, region, inlandWater, ocean)
+    private fun fromCpp(position: Position, formattedAddress: String, street: String, city: String, state: String, subAdminArea: String, subLocality: String, country: String, countryCode: String, postalCode: String, region: Variant_NullType_Region?): GeocoderResult {
+      return GeocoderResult(position, formattedAddress, street, city, state, subAdminArea, subLocality, country, countryCode, postalCode, region)
     }
   }
 }

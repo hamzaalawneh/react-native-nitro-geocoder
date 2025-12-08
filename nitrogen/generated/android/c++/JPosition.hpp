@@ -31,13 +31,13 @@ namespace margelo::nitro::nitrogeocoder {
     [[nodiscard]]
     Position toCpp() const {
       static const auto clazz = javaClassStatic();
-      static const auto fieldLat = clazz->getField<double>("lat");
-      double lat = this->getFieldValue(fieldLat);
-      static const auto fieldLng = clazz->getField<double>("lng");
-      double lng = this->getFieldValue(fieldLng);
+      static const auto fieldLatitude = clazz->getField<double>("latitude");
+      double latitude = this->getFieldValue(fieldLatitude);
+      static const auto fieldLongitude = clazz->getField<double>("longitude");
+      double longitude = this->getFieldValue(fieldLongitude);
       return Position(
-        lat,
-        lng
+        latitude,
+        longitude
       );
     }
 
@@ -52,8 +52,8 @@ namespace margelo::nitro::nitrogeocoder {
       static const auto create = clazz->getStaticMethod<JSignature>("fromCpp");
       return create(
         clazz,
-        value.lat,
-        value.lng
+        value.latitude,
+        value.longitude
       );
     }
   };

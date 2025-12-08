@@ -19,29 +19,29 @@ public extension Position {
   /**
    * Create a new instance of `Position`.
    */
-  init(lat: Double, lng: Double) {
-    self.init(lat, lng)
+  init(latitude: Double, longitude: Double) {
+    self.init(latitude, longitude)
   }
 
-  var lat: Double {
+  var latitude: Double {
     @inline(__always)
     get {
-      return self.__lat
+      return self.__latitude
     }
     @inline(__always)
     set {
-      self.__lat = newValue
+      self.__latitude = newValue
     }
   }
   
-  var lng: Double {
+  var longitude: Double {
     @inline(__always)
     get {
-      return self.__lng
+      return self.__longitude
     }
     @inline(__always)
     set {
-      self.__lng = newValue
+      self.__longitude = newValue
     }
   }
 }

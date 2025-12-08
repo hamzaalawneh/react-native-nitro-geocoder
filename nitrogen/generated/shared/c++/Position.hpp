@@ -34,12 +34,12 @@ namespace margelo::nitro::nitrogeocoder {
    */
   struct Position {
   public:
-    double lat     SWIFT_PRIVATE;
-    double lng     SWIFT_PRIVATE;
+    double latitude     SWIFT_PRIVATE;
+    double longitude     SWIFT_PRIVATE;
 
   public:
     Position() = default;
-    explicit Position(double lat, double lng): lat(lat), lng(lng) {}
+    explicit Position(double latitude, double longitude): latitude(latitude), longitude(longitude) {}
   };
 
 } // namespace margelo::nitro::nitrogeocoder
@@ -52,14 +52,14 @@ namespace margelo::nitro {
     static inline margelo::nitro::nitrogeocoder::Position fromJSI(jsi::Runtime& runtime, const jsi::Value& arg) {
       jsi::Object obj = arg.asObject(runtime);
       return margelo::nitro::nitrogeocoder::Position(
-        JSIConverter<double>::fromJSI(runtime, obj.getProperty(runtime, "lat")),
-        JSIConverter<double>::fromJSI(runtime, obj.getProperty(runtime, "lng"))
+        JSIConverter<double>::fromJSI(runtime, obj.getProperty(runtime, "latitude")),
+        JSIConverter<double>::fromJSI(runtime, obj.getProperty(runtime, "longitude"))
       );
     }
     static inline jsi::Value toJSI(jsi::Runtime& runtime, const margelo::nitro::nitrogeocoder::Position& arg) {
       jsi::Object obj(runtime);
-      obj.setProperty(runtime, "lat", JSIConverter<double>::toJSI(runtime, arg.lat));
-      obj.setProperty(runtime, "lng", JSIConverter<double>::toJSI(runtime, arg.lng));
+      obj.setProperty(runtime, "latitude", JSIConverter<double>::toJSI(runtime, arg.latitude));
+      obj.setProperty(runtime, "longitude", JSIConverter<double>::toJSI(runtime, arg.longitude));
       return obj;
     }
     static inline bool canConvert(jsi::Runtime& runtime, const jsi::Value& value) {
@@ -70,8 +70,8 @@ namespace margelo::nitro {
       if (!nitro::isPlainObject(runtime, obj)) {
         return false;
       }
-      if (!JSIConverter<double>::canConvert(runtime, obj.getProperty(runtime, "lat"))) return false;
-      if (!JSIConverter<double>::canConvert(runtime, obj.getProperty(runtime, "lng"))) return false;
+      if (!JSIConverter<double>::canConvert(runtime, obj.getProperty(runtime, "latitude"))) return false;
+      if (!JSIConverter<double>::canConvert(runtime, obj.getProperty(runtime, "longitude"))) return false;
       return true;
     }
   };

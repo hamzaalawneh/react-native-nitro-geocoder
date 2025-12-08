@@ -19,8 +19,8 @@ public extension GeocoderResult {
   /**
    * Create a new instance of `GeocoderResult`.
    */
-  init(position: Position, formattedAddress: String, featureName: String, streetNumber: String, streetName: String, postalCode: String, city: String, country: String, countryCode: String, state: String, subAdminArea: String, subLocality: String, region: Variant_NullType_Region?, inlandWater: String, ocean: String) {
-    self.init(position, std.string(formattedAddress), std.string(featureName), std.string(streetNumber), std.string(streetName), std.string(postalCode), std.string(city), std.string(country), std.string(countryCode), std.string(state), std.string(subAdminArea), std.string(subLocality), { () -> bridge.std__optional_std__variant_nitro__NullType__Region__ in
+  init(position: Position, formattedAddress: String, street: String, city: String, state: String, subAdminArea: String, subLocality: String, country: String, countryCode: String, postalCode: String, region: Variant_NullType_Region?) {
+    self.init(position, std.string(formattedAddress), std.string(street), std.string(city), std.string(state), std.string(subAdminArea), std.string(subLocality), std.string(country), std.string(countryCode), std.string(postalCode), { () -> bridge.std__optional_std__variant_nitro__NullType__Region__ in
       if let __unwrappedValue = region {
         return bridge.create_std__optional_std__variant_nitro__NullType__Region__({ () -> bridge.std__variant_nitro__NullType__Region_ in
           switch __unwrappedValue {
@@ -33,7 +33,7 @@ public extension GeocoderResult {
       } else {
         return .init()
       }
-    }(), std.string(inlandWater), std.string(ocean))
+    }())
   }
 
   var position: Position {
@@ -58,47 +58,14 @@ public extension GeocoderResult {
     }
   }
   
-  var featureName: String {
+  var street: String {
     @inline(__always)
     get {
-      return String(self.__featureName)
+      return String(self.__street)
     }
     @inline(__always)
     set {
-      self.__featureName = std.string(newValue)
-    }
-  }
-  
-  var streetNumber: String {
-    @inline(__always)
-    get {
-      return String(self.__streetNumber)
-    }
-    @inline(__always)
-    set {
-      self.__streetNumber = std.string(newValue)
-    }
-  }
-  
-  var streetName: String {
-    @inline(__always)
-    get {
-      return String(self.__streetName)
-    }
-    @inline(__always)
-    set {
-      self.__streetName = std.string(newValue)
-    }
-  }
-  
-  var postalCode: String {
-    @inline(__always)
-    get {
-      return String(self.__postalCode)
-    }
-    @inline(__always)
-    set {
-      self.__postalCode = std.string(newValue)
+      self.__street = std.string(newValue)
     }
   }
   
@@ -110,28 +77,6 @@ public extension GeocoderResult {
     @inline(__always)
     set {
       self.__city = std.string(newValue)
-    }
-  }
-  
-  var country: String {
-    @inline(__always)
-    get {
-      return String(self.__country)
-    }
-    @inline(__always)
-    set {
-      self.__country = std.string(newValue)
-    }
-  }
-  
-  var countryCode: String {
-    @inline(__always)
-    get {
-      return String(self.__countryCode)
-    }
-    @inline(__always)
-    set {
-      self.__countryCode = std.string(newValue)
     }
   }
   
@@ -165,6 +110,39 @@ public extension GeocoderResult {
     @inline(__always)
     set {
       self.__subLocality = std.string(newValue)
+    }
+  }
+  
+  var country: String {
+    @inline(__always)
+    get {
+      return String(self.__country)
+    }
+    @inline(__always)
+    set {
+      self.__country = std.string(newValue)
+    }
+  }
+  
+  var countryCode: String {
+    @inline(__always)
+    get {
+      return String(self.__countryCode)
+    }
+    @inline(__always)
+    set {
+      self.__countryCode = std.string(newValue)
+    }
+  }
+  
+  var postalCode: String {
+    @inline(__always)
+    get {
+      return String(self.__postalCode)
+    }
+    @inline(__always)
+    set {
+      self.__postalCode = std.string(newValue)
     }
   }
   
@@ -208,28 +186,6 @@ public extension GeocoderResult {
           return .init()
         }
       }()
-    }
-  }
-  
-  var inlandWater: String {
-    @inline(__always)
-    get {
-      return String(self.__inlandWater)
-    }
-    @inline(__always)
-    set {
-      self.__inlandWater = std.string(newValue)
-    }
-  }
-  
-  var ocean: String {
-    @inline(__always)
-    get {
-      return String(self.__ocean)
-    }
-    @inline(__always)
-    set {
-      self.__ocean = std.string(newValue)
     }
   }
 }

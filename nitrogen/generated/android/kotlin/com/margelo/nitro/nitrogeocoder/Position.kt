@@ -19,10 +19,10 @@ import com.facebook.proguard.annotations.DoNotStrip
 data class Position(
   @DoNotStrip
   @Keep
-  val lat: Double,
+  val latitude: Double,
   @DoNotStrip
   @Keep
-  val lng: Double
+  val longitude: Double
 ) {
   /* primary constructor */
 
@@ -34,8 +34,8 @@ data class Position(
     @Keep
     @Suppress("unused")
     @JvmStatic
-    private fun fromCpp(lat: Double, lng: Double): Position {
-      return Position(lat, lng)
+    private fun fromCpp(latitude: Double, longitude: Double): Position {
+      return Position(latitude, longitude)
     }
   }
 }

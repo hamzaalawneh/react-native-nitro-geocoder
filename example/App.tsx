@@ -1,91 +1,85 @@
-import React, { useState, useCallback } from 'react'
+import React, { useCallback, useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet,
   ActivityIndicator,
   Platform,
   SafeAreaView,
+  ScrollView,
   StatusBar,
-} from 'react-native'
-import {
-  Geocoder,
-  type GeocoderResult,
-} from 'react-native-nitro-geocoder'
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { Geocoder, type GeocoderResult } from 'react-native-nitro-geocoder';
 
 const SAMPLE_LOCATIONS = [
-  { name: 'Riyadh', lat: 24.7136, lon: 46.6753 },
+  { name: 'Riyadh', lat: 24.749399867308327, lon: 46.65343796523006 },
   { name: 'New York', lat: 40.7128, lon: -74.006 },
   { name: 'Tokyo', lat: 35.6762, lon: 139.6503 },
   { name: 'London', lat: 51.5074, lon: -0.1278 },
   { name: 'Paris', lat: 48.8566, lon: 2.3522 },
-]
+];
 
 export default function App() {
-  const [address, setAddress] = useState('Riyadh, Saudi Arabia')
-  const [latitude, setLatitude] = useState('24.7136')
-  const [longitude, setLongitude] = useState('46.6753')
-  const [locale, setLocale] = useState('en')
-  const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<GeocoderResult | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [distance, setDistance] = useState<number | null>(null)
+  const [address, setAddress] = useState('Riyadh, Saudi Arabia');
+  const [latitude, setLatitude] = useState('24.7136');
+  const [longitude, setLongitude] = useState('46.6753');
+  const [locale, setLocale] = useState('en');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<GeocoderResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [distance, setDistance] = useState<number | null>(null);
 
-  const isAvailable = Geocoder.isGeocodingAvailable
+  const isAvailable = Geocoder.isGeocodingAvailable;
 
   const handleGeocode = useCallback(async () => {
-    if (!address.trim()) return
-    setLoading(true)
-    setError(null)
-    setResult(null)
+    if (!address.trim()) return;
+    setLoading(true);
+    setError(null);
+    setResult(null);
 
     try {
-      const data = await Geocoder.geocode(address, locale)
-      setResult(data[0] ?? null)
+      const data = await Geocoder.geocode(address, locale);
+      setResult(data);
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Unknown error')
+      setError(e instanceof Error ? e.message : 'Unknown error');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [address, locale])
+  }, [address, locale]);
 
   const handleReverseGeocode = useCallback(async () => {
-    const lat = parseFloat(latitude)
-    const lon = parseFloat(longitude)
+    const lat = parseFloat(latitude);
+    const lon = parseFloat(longitude);
     if (isNaN(lat) || isNaN(lon)) {
-      setError('Invalid coordinates')
-      return
+      setError('Invalid coordinates');
+      return;
     }
 
-    setLoading(true)
-    setError(null)
-    setResult(null)
+    setLoading(true);
+    setError(null);
+    setResult(null);
 
     try {
-      const data = await Geocoder.reverseGeocode(lat, lon, locale)
-      setResult(data[0] ?? null)
+      const data = await Geocoder.reverseGeocode(lat, lon, locale);
+      setResult(data);
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Unknown error')
+      setError(e instanceof Error ? e.message : 'Unknown error');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [latitude, longitude, locale])
+  }, [latitude, longitude, locale]);
 
   const handleCalculateDistance = useCallback(() => {
-    const dist = Geocoder.calculateDistance(
-      24.7136, 46.6753,
-      21.4225, 39.8262
-    )
-    setDistance(dist)
-  }, [])
+    const dist = Geocoder.calculateDistance(24.7136, 46.6753, 21.4225, 39.8262);
+    setDistance(dist);
+  }, []);
 
   const selectLocation = (lat: number, lon: number) => {
-    setLatitude(lat.toString())
-    setLongitude(lon.toString())
-  }
+    setLatitude(lat.toString());
+    setLongitude(lon.toString());
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -96,8 +90,15 @@ export default function App() {
         {/* Availability Check */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Status</Text>
-          <Text style={[styles.status, { color: isAvailable ? '#4CAF50' : '#F44336' }]}>
-            {isAvailable ? '✓ Geocoding Available' : '✗ Geocoding Not Available'}
+          <Text
+            style={[
+              styles.status,
+              { color: isAvailable ? '#4CAF50' : '#F44336' },
+            ]}
+          >
+            {isAvailable
+              ? '✓ Geocoding Available'
+              : '✗ Geocoding Not Available'}
           </Text>
         </View>
 
@@ -105,12 +106,21 @@ export default function App() {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Locale</Text>
           <View style={styles.localeRow}>
-            {['en', 'ar', 'ja', 'fr', 'de'].map((loc) => (
+            {['en', 'ar', 'ja', 'fr', 'de'].map(loc => (
               <TouchableOpacity
                 key={loc}
-                style={[styles.localeBtn, locale === loc && styles.localeBtnActive]}
-                onPress={() => setLocale(loc)}>
-                <Text style={[styles.localeBtnText, locale === loc && styles.localeBtnTextActive]}>
+                style={[
+                  styles.localeBtn,
+                  locale === loc && styles.localeBtnActive,
+                ]}
+                onPress={() => setLocale(loc)}
+              >
+                <Text
+                  style={[
+                    styles.localeBtnText,
+                    locale === loc && styles.localeBtnTextActive,
+                  ]}
+                >
                   {loc.toUpperCase()}
                 </Text>
               </TouchableOpacity>
@@ -128,7 +138,11 @@ export default function App() {
             onChangeText={setAddress}
             placeholder="Enter address..."
           />
-          <TouchableOpacity style={styles.button} onPress={handleGeocode} disabled={loading}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleGeocode}
+            disabled={loading}
+          >
             <Text style={styles.buttonText}>Geocode Address</Text>
           </TouchableOpacity>
         </View>
@@ -139,11 +153,12 @@ export default function App() {
           <Text style={styles.cardSubtitle}>Coordinates → Address</Text>
 
           <View style={styles.quickLocations}>
-            {SAMPLE_LOCATIONS.map((loc) => (
+            {SAMPLE_LOCATIONS.map(loc => (
               <TouchableOpacity
                 key={loc.name}
                 style={styles.quickLocationBtn}
-                onPress={() => selectLocation(loc.lat, loc.lon)}>
+                onPress={() => selectLocation(loc.lat, loc.lon)}
+              >
                 <Text style={styles.quickLocationText}>{loc.name}</Text>
               </TouchableOpacity>
             ))}
@@ -165,7 +180,11 @@ export default function App() {
               keyboardType="numeric"
             />
           </View>
-          <TouchableOpacity style={styles.button} onPress={handleReverseGeocode} disabled={loading}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleReverseGeocode}
+            disabled={loading}
+          >
             <Text style={styles.buttonText}>Reverse Geocode</Text>
           </TouchableOpacity>
         </View>
@@ -174,7 +193,10 @@ export default function App() {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Distance Calculation</Text>
           <Text style={styles.cardSubtitle}>Riyadh ↔ Mecca (synchronous)</Text>
-          <TouchableOpacity style={[styles.button, styles.distanceButton]} onPress={handleCalculateDistance}>
+          <TouchableOpacity
+            style={[styles.button, styles.distanceButton]}
+            onPress={handleCalculateDistance}
+          >
             <Text style={styles.buttonText}>Calculate Distance</Text>
           </TouchableOpacity>
           {distance !== null && (
@@ -208,7 +230,8 @@ export default function App() {
             <View style={styles.resultRow}>
               <Text style={styles.resultLabel}>Coordinates:</Text>
               <Text style={styles.resultValue}>
-                {result.position.lat.toFixed(6)}, {result.position.lng.toFixed(6)}
+                {result.position.latitude.toFixed(6)},{' '}
+                {result.position.longitude.toFixed(6)}
               </Text>
             </View>
 
@@ -229,14 +252,16 @@ export default function App() {
             )}
 
             <Text style={styles.rawTitle}>Raw Response:</Text>
-            <Text style={styles.rawJson}>{JSON.stringify(result, null, 2)}</Text>
+            <Text style={styles.rawJson}>
+              {JSON.stringify(result, null, 2)}
+            </Text>
           </View>
         )}
 
         <View style={{ height: 40 }} />
       </ScrollView>
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -402,4 +427,4 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     color: '#333',
   },
-})
+});

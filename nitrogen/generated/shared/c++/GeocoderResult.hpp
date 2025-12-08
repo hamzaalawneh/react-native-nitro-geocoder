@@ -44,23 +44,19 @@ namespace margelo::nitro::nitrogeocoder {
   public:
     Position position     SWIFT_PRIVATE;
     std::string formattedAddress     SWIFT_PRIVATE;
-    std::string featureName     SWIFT_PRIVATE;
-    std::string streetNumber     SWIFT_PRIVATE;
-    std::string streetName     SWIFT_PRIVATE;
-    std::string postalCode     SWIFT_PRIVATE;
+    std::string street     SWIFT_PRIVATE;
     std::string city     SWIFT_PRIVATE;
-    std::string country     SWIFT_PRIVATE;
-    std::string countryCode     SWIFT_PRIVATE;
     std::string state     SWIFT_PRIVATE;
     std::string subAdminArea     SWIFT_PRIVATE;
     std::string subLocality     SWIFT_PRIVATE;
+    std::string country     SWIFT_PRIVATE;
+    std::string countryCode     SWIFT_PRIVATE;
+    std::string postalCode     SWIFT_PRIVATE;
     std::optional<std::variant<nitro::NullType, Region>> region     SWIFT_PRIVATE;
-    std::string inlandWater     SWIFT_PRIVATE;
-    std::string ocean     SWIFT_PRIVATE;
 
   public:
     GeocoderResult() = default;
-    explicit GeocoderResult(Position position, std::string formattedAddress, std::string featureName, std::string streetNumber, std::string streetName, std::string postalCode, std::string city, std::string country, std::string countryCode, std::string state, std::string subAdminArea, std::string subLocality, std::optional<std::variant<nitro::NullType, Region>> region, std::string inlandWater, std::string ocean): position(position), formattedAddress(formattedAddress), featureName(featureName), streetNumber(streetNumber), streetName(streetName), postalCode(postalCode), city(city), country(country), countryCode(countryCode), state(state), subAdminArea(subAdminArea), subLocality(subLocality), region(region), inlandWater(inlandWater), ocean(ocean) {}
+    explicit GeocoderResult(Position position, std::string formattedAddress, std::string street, std::string city, std::string state, std::string subAdminArea, std::string subLocality, std::string country, std::string countryCode, std::string postalCode, std::optional<std::variant<nitro::NullType, Region>> region): position(position), formattedAddress(formattedAddress), street(street), city(city), state(state), subAdminArea(subAdminArea), subLocality(subLocality), country(country), countryCode(countryCode), postalCode(postalCode), region(region) {}
   };
 
 } // namespace margelo::nitro::nitrogeocoder
@@ -75,38 +71,30 @@ namespace margelo::nitro {
       return margelo::nitro::nitrogeocoder::GeocoderResult(
         JSIConverter<margelo::nitro::nitrogeocoder::Position>::fromJSI(runtime, obj.getProperty(runtime, "position")),
         JSIConverter<std::string>::fromJSI(runtime, obj.getProperty(runtime, "formattedAddress")),
-        JSIConverter<std::string>::fromJSI(runtime, obj.getProperty(runtime, "featureName")),
-        JSIConverter<std::string>::fromJSI(runtime, obj.getProperty(runtime, "streetNumber")),
-        JSIConverter<std::string>::fromJSI(runtime, obj.getProperty(runtime, "streetName")),
-        JSIConverter<std::string>::fromJSI(runtime, obj.getProperty(runtime, "postalCode")),
+        JSIConverter<std::string>::fromJSI(runtime, obj.getProperty(runtime, "street")),
         JSIConverter<std::string>::fromJSI(runtime, obj.getProperty(runtime, "city")),
-        JSIConverter<std::string>::fromJSI(runtime, obj.getProperty(runtime, "country")),
-        JSIConverter<std::string>::fromJSI(runtime, obj.getProperty(runtime, "countryCode")),
         JSIConverter<std::string>::fromJSI(runtime, obj.getProperty(runtime, "state")),
         JSIConverter<std::string>::fromJSI(runtime, obj.getProperty(runtime, "subAdminArea")),
         JSIConverter<std::string>::fromJSI(runtime, obj.getProperty(runtime, "subLocality")),
-        JSIConverter<std::optional<std::variant<nitro::NullType, margelo::nitro::nitrogeocoder::Region>>>::fromJSI(runtime, obj.getProperty(runtime, "region")),
-        JSIConverter<std::string>::fromJSI(runtime, obj.getProperty(runtime, "inlandWater")),
-        JSIConverter<std::string>::fromJSI(runtime, obj.getProperty(runtime, "ocean"))
+        JSIConverter<std::string>::fromJSI(runtime, obj.getProperty(runtime, "country")),
+        JSIConverter<std::string>::fromJSI(runtime, obj.getProperty(runtime, "countryCode")),
+        JSIConverter<std::string>::fromJSI(runtime, obj.getProperty(runtime, "postalCode")),
+        JSIConverter<std::optional<std::variant<nitro::NullType, margelo::nitro::nitrogeocoder::Region>>>::fromJSI(runtime, obj.getProperty(runtime, "region"))
       );
     }
     static inline jsi::Value toJSI(jsi::Runtime& runtime, const margelo::nitro::nitrogeocoder::GeocoderResult& arg) {
       jsi::Object obj(runtime);
       obj.setProperty(runtime, "position", JSIConverter<margelo::nitro::nitrogeocoder::Position>::toJSI(runtime, arg.position));
       obj.setProperty(runtime, "formattedAddress", JSIConverter<std::string>::toJSI(runtime, arg.formattedAddress));
-      obj.setProperty(runtime, "featureName", JSIConverter<std::string>::toJSI(runtime, arg.featureName));
-      obj.setProperty(runtime, "streetNumber", JSIConverter<std::string>::toJSI(runtime, arg.streetNumber));
-      obj.setProperty(runtime, "streetName", JSIConverter<std::string>::toJSI(runtime, arg.streetName));
-      obj.setProperty(runtime, "postalCode", JSIConverter<std::string>::toJSI(runtime, arg.postalCode));
+      obj.setProperty(runtime, "street", JSIConverter<std::string>::toJSI(runtime, arg.street));
       obj.setProperty(runtime, "city", JSIConverter<std::string>::toJSI(runtime, arg.city));
-      obj.setProperty(runtime, "country", JSIConverter<std::string>::toJSI(runtime, arg.country));
-      obj.setProperty(runtime, "countryCode", JSIConverter<std::string>::toJSI(runtime, arg.countryCode));
       obj.setProperty(runtime, "state", JSIConverter<std::string>::toJSI(runtime, arg.state));
       obj.setProperty(runtime, "subAdminArea", JSIConverter<std::string>::toJSI(runtime, arg.subAdminArea));
       obj.setProperty(runtime, "subLocality", JSIConverter<std::string>::toJSI(runtime, arg.subLocality));
+      obj.setProperty(runtime, "country", JSIConverter<std::string>::toJSI(runtime, arg.country));
+      obj.setProperty(runtime, "countryCode", JSIConverter<std::string>::toJSI(runtime, arg.countryCode));
+      obj.setProperty(runtime, "postalCode", JSIConverter<std::string>::toJSI(runtime, arg.postalCode));
       obj.setProperty(runtime, "region", JSIConverter<std::optional<std::variant<nitro::NullType, margelo::nitro::nitrogeocoder::Region>>>::toJSI(runtime, arg.region));
-      obj.setProperty(runtime, "inlandWater", JSIConverter<std::string>::toJSI(runtime, arg.inlandWater));
-      obj.setProperty(runtime, "ocean", JSIConverter<std::string>::toJSI(runtime, arg.ocean));
       return obj;
     }
     static inline bool canConvert(jsi::Runtime& runtime, const jsi::Value& value) {
@@ -119,19 +107,15 @@ namespace margelo::nitro {
       }
       if (!JSIConverter<margelo::nitro::nitrogeocoder::Position>::canConvert(runtime, obj.getProperty(runtime, "position"))) return false;
       if (!JSIConverter<std::string>::canConvert(runtime, obj.getProperty(runtime, "formattedAddress"))) return false;
-      if (!JSIConverter<std::string>::canConvert(runtime, obj.getProperty(runtime, "featureName"))) return false;
-      if (!JSIConverter<std::string>::canConvert(runtime, obj.getProperty(runtime, "streetNumber"))) return false;
-      if (!JSIConverter<std::string>::canConvert(runtime, obj.getProperty(runtime, "streetName"))) return false;
-      if (!JSIConverter<std::string>::canConvert(runtime, obj.getProperty(runtime, "postalCode"))) return false;
+      if (!JSIConverter<std::string>::canConvert(runtime, obj.getProperty(runtime, "street"))) return false;
       if (!JSIConverter<std::string>::canConvert(runtime, obj.getProperty(runtime, "city"))) return false;
-      if (!JSIConverter<std::string>::canConvert(runtime, obj.getProperty(runtime, "country"))) return false;
-      if (!JSIConverter<std::string>::canConvert(runtime, obj.getProperty(runtime, "countryCode"))) return false;
       if (!JSIConverter<std::string>::canConvert(runtime, obj.getProperty(runtime, "state"))) return false;
       if (!JSIConverter<std::string>::canConvert(runtime, obj.getProperty(runtime, "subAdminArea"))) return false;
       if (!JSIConverter<std::string>::canConvert(runtime, obj.getProperty(runtime, "subLocality"))) return false;
+      if (!JSIConverter<std::string>::canConvert(runtime, obj.getProperty(runtime, "country"))) return false;
+      if (!JSIConverter<std::string>::canConvert(runtime, obj.getProperty(runtime, "countryCode"))) return false;
+      if (!JSIConverter<std::string>::canConvert(runtime, obj.getProperty(runtime, "postalCode"))) return false;
       if (!JSIConverter<std::optional<std::variant<nitro::NullType, margelo::nitro::nitrogeocoder::Region>>>::canConvert(runtime, obj.getProperty(runtime, "region"))) return false;
-      if (!JSIConverter<std::string>::canConvert(runtime, obj.getProperty(runtime, "inlandWater"))) return false;
-      if (!JSIConverter<std::string>::canConvert(runtime, obj.getProperty(runtime, "ocean"))) return false;
       return true;
     }
   };

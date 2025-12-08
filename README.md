@@ -58,10 +58,9 @@ if (Geocoder.isGeocodingAvailable) {
 ### Forward Geocoding (Address to Coordinates)
 
 ```typescript
-const results = await Geocoder.geocode('Riyadh, Saudi Arabia', 'en')
-const result = results[0]
+const result = await Geocoder.geocode('Riyadh, Saudi Arabia', 'en')
 // {
-//   position: { lat: 24.7136, lng: 46.6753 },
+//   position: { latitude: 24.7136, longitude: 46.6753 },
 //   formattedAddress: "Riyadh, Riyadh Province, Saudi Arabia",
 //   city: "Riyadh",
 //   country: "Saudi Arabia",
@@ -73,8 +72,7 @@ const result = results[0]
 ### Reverse Geocoding (Coordinates to Address)
 
 ```typescript
-const results = await Geocoder.reverseGeocode(24.7136, 46.6753, 'en')
-const result = results[0]
+const result = await Geocoder.reverseGeocode(24.7136, 46.6753, 'en')
 console.log(result.formattedAddress) // "King Fahd Road, Riyadh, Saudi Arabia"
 console.log(result.city)             // "Riyadh"
 console.log(result.country)          // "Saudi Arabia"
@@ -103,15 +101,15 @@ console.log(`Distance: ${(distance / 1000).toFixed(2)} km`) // ~850 km
 ```typescript
 // English
 const en = await Geocoder.reverseGeocode(35.6762, 139.6503, 'en')
-console.log(en[0].country) // "Japan"
+console.log(en.country) // "Japan"
 
 // Arabic
 const ar = await Geocoder.reverseGeocode(24.7136, 46.6753, 'ar')
-console.log(ar[0].country) // "المملكة العربية السعودية"
+console.log(ar.country) // "المملكة العربية السعودية"
 
 // Japanese
 const ja = await Geocoder.reverseGeocode(35.6762, 139.6503, 'ja')
-console.log(ja[0].country) // "日本"
+console.log(ja.country) // "日本"
 ```
 
 ## API Reference
@@ -120,8 +118,8 @@ console.log(ja[0].country) // "日本"
 
 | Method | Description |
 |--------|-------------|
-| `geocode(address, locale)` | Address to coordinates (returns array) |
-| `reverseGeocode(lat, lon, locale)` | Coordinates to address (returns array) |
+| `geocode(address, locale)` | Address to coordinates |
+| `reverseGeocode(lat, lon, locale)` | Coordinates to address |
 | `geocodeMultiple(address, maxResults, locale)` | Get multiple results |
 | `calculateDistance(lat1, lon1, lat2, lon2)` | Distance in meters (sync) |
 
@@ -135,8 +133,8 @@ console.log(ja[0].country) // "日本"
 
 ```typescript
 interface Position {
-  lat: number
-  lng: number
+  latitude: number
+  longitude: number
 }
 
 interface Region {
@@ -147,19 +145,15 @@ interface Region {
 interface GeocoderResult {
   position: Position
   formattedAddress: string
-  featureName: string
-  streetNumber: string
-  streetName: string
-  postalCode: string
+  street: string
   city: string
-  country: string
-  countryCode: string
   state: string
   subAdminArea: string
   subLocality: string
-  region: Region | null
-  inlandWater: string
-  ocean: string
+  country: string
+  countryCode: string
+  postalCode: string
+  region: Region | null  // iOS only, null on Android
 }
 ```
 
@@ -196,7 +190,7 @@ import {
 
 ```typescript
 function MyComponent() {
-  const { result, results, error, loading, reverseGeocode, reset } = useReverseGeocode()
+  const { result, error, loading, reverseGeocode, reset } = useReverseGeocode()
 
   const handleLookup = async () => {
     await reverseGeocode(24.7136, 46.6753, 'en')
@@ -215,10 +209,9 @@ function MyComponent() {
 ### useGeocode
 
 ```typescript
-const { result, results, error, loading, geocode, reset } = useGeocode()
+const { result, error, loading, geocode, reset } = useGeocode()
 
 await geocode('Riyadh, Saudi Arabia', 'en')
-// result: first result (convenience), results: all results
 ```
 
 ### useGeocodeMultiple

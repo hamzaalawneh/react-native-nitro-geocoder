@@ -7,7 +7,6 @@ jest.mock('react-native-nitro-modules', () => ({
       reverseGeocode: jest.fn(),
       geocodeMultiple: jest.fn(),
       calculateDistance: jest.fn(),
-      clearCache: jest.fn(),
       reverseGeocodeSimple: jest.fn(),
     })),
   },
@@ -53,9 +52,9 @@ describe('Geocoder Module', () => {
     expect(typeof Geocoder.calculateDistance).toBe('function')
   })
 
-  it('should have clearCache method', () => {
+  it('should have reverseGeocodeSimple method', () => {
     const { Geocoder } = require('../src/index')
-    expect(typeof Geocoder.clearCache).toBe('function')
+    expect(typeof Geocoder.reverseGeocodeSimple).toBe('function')
   })
 })
 

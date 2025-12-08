@@ -17,9 +17,9 @@
 namespace margelo::nitro::nitrogeocoder { struct GeocoderResult; }
 
 #include "GeocoderResult.hpp"
-#include <vector>
 #include <NitroModules/Promise.hpp>
 #include <string>
+#include <vector>
 
 namespace margelo::nitro::nitrogeocoder {
 
@@ -52,8 +52,8 @@ namespace margelo::nitro::nitrogeocoder {
 
     public:
       // Methods
-      virtual std::shared_ptr<Promise<std::vector<GeocoderResult>>> geocode(const std::string& address, const std::string& locale) = 0;
-      virtual std::shared_ptr<Promise<std::vector<GeocoderResult>>> reverseGeocode(double latitude, double longitude, const std::string& locale) = 0;
+      virtual std::shared_ptr<Promise<GeocoderResult>> geocode(const std::string& address, const std::string& locale) = 0;
+      virtual std::shared_ptr<Promise<GeocoderResult>> reverseGeocode(double latitude, double longitude, const std::string& locale) = 0;
       virtual std::shared_ptr<Promise<std::vector<GeocoderResult>>> geocodeMultiple(const std::string& address, double maxResults, const std::string& locale) = 0;
       virtual double calculateDistance(double lat1, double lon1, double lat2, double lon2) = 0;
       virtual std::shared_ptr<Promise<std::string>> reverseGeocodeSimple(double latitude, double longitude) = 0;

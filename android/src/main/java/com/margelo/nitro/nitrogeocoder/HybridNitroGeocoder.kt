@@ -5,6 +5,7 @@ import android.location.Geocoder
 import com.facebook.proguard.annotations.DoNotStrip
 import com.margelo.nitro.NitroModules
 import com.margelo.nitro.core.Promise
+import java.util.Locale
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
@@ -17,19 +18,17 @@ class HybridNitroGeocoder : HybridNitroGeocoderSpec() {
         get() = NitroModules.applicationContext
             ?: throw RuntimeException("Application context not available")
 
-    private var _geocoder: Geocoder? = null
     @Suppress("DEPRECATION")
-    private val geocoder: Geocoder
-        get() {
-            if (_geocoder == null) {
-                val locale = context.resources.configuration.locale
-                _geocoder = Geocoder(context, locale)
-            }
-            return _geocoder!!
-        }
+    private fun getGeocoder(locale: String): Geocoder {
+        val loc = if (locale.isNotEmpty()) Locale(locale) else context.resources.configuration.locale
+        return Geocoder(context, loc)
+    }
 
     override val isGeocodingAvailable: Boolean
         get() = Geocoder.isPresent()
+
+    // Plus Code pattern (e.g., "PM7G+C4M", "8FVC9G8F+5W")
+    private val plusCodeRegex = Regex("""[A-Z0-9]{4,8}\+[A-Z0-9]{2,4}""")
 
     private fun buildGeocoderResult(addr: Address, lat: Double? = null, lon: Double? = null): GeocoderResult {
         val sb = StringBuilder()
@@ -38,64 +37,59 @@ class HybridNitroGeocoder : HybridNitroGeocoderSpec() {
             sb.append(addr.getAddressLine(i))
         }
 
-        val name = addr.featureName
-        val featureName = if (name != null &&
-            name != addr.subThoroughfare &&
-            name != addr.thoroughfare &&
-            name != addr.locality) {
-            name
-        } else {
-            ""
-        }
+        // Remove Plus Codes from formatted address
+        val formattedAddress = sb.toString()
+            .replace(plusCodeRegex, "")
+            .replace(Regex(""",\s*,"""), ",")  // Clean up double commas
+            .replace(Regex("""^\s*,\s*"""), "") // Clean up leading comma
+            .replace(Regex("""\s*,\s*$"""), "") // Clean up trailing comma
+            .trim()
+
+        // Combine street number and name
+        val street = listOfNotNull(addr.subThoroughfare, addr.thoroughfare)
+            .filter { it.isNotEmpty() }
+            .joinToString(" ")
 
         return GeocoderResult(
-            position = Position(lat = lat ?: addr.latitude, lng = lon ?: addr.longitude),
-            formattedAddress = sb.toString(),
-            featureName = featureName,
-            streetNumber = addr.subThoroughfare ?: "",
-            streetName = addr.thoroughfare ?: "",
-            postalCode = addr.postalCode ?: "",
+            position = Position(latitude = lat ?: addr.latitude, longitude = lon ?: addr.longitude),
+            formattedAddress = formattedAddress,
+            street = street,
             city = addr.locality ?: "",
-            country = addr.countryName ?: "",
-            countryCode = addr.countryCode ?: "",
             state = addr.adminArea ?: "",
             subAdminArea = addr.subAdminArea ?: "",
             subLocality = addr.subLocality ?: "",
-            region = null,
-            inlandWater = "",
-            ocean = ""
+            country = addr.countryName ?: "",
+            countryCode = addr.countryCode ?: "",
+            postalCode = addr.postalCode ?: "",
+            region = null
         )
     }
 
     @Suppress("DEPRECATION")
-    override fun geocode(address: String, locale: String): Promise<Array<GeocoderResult>> {
+    override fun geocode(address: String, locale: String): Promise<GeocoderResult> {
         return Promise.async {
             if (!Geocoder.isPresent()) {
                 throw Exception("Geocoder not available")
             }
 
-            val addresses = geocoder.getFromLocationName(address, 20)
-            if (addresses.isNullOrEmpty()) {
-                throw Exception("No results found for address: $address")
-            }
+            val addr = getGeocoder(locale).getFromLocationName(address, 1)?.firstOrNull()
+                ?: throw Exception("No results found for address: $address")
 
-            addresses.map { buildGeocoderResult(it) }.toTypedArray()
+            buildGeocoderResult(addr)
         }
     }
 
     @Suppress("DEPRECATION")
-    override fun reverseGeocode(latitude: Double, longitude: Double, locale: String): Promise<Array<GeocoderResult>> {
+    override fun reverseGeocode(latitude: Double, longitude: Double, locale: String): Promise<GeocoderResult> {
         return Promise.async {
             if (!Geocoder.isPresent()) {
                 throw Exception("Geocoder not available")
             }
 
-            val addresses = geocoder.getFromLocation(latitude, longitude, 20)
-            if (addresses.isNullOrEmpty()) {
-                throw Exception("No results found for coordinates: $latitude, $longitude")
-            }
+            val addr = getGeocoder(locale).getFromLocation(latitude, longitude, 1)?.firstOrNull()
+                ?: throw Exception("No results found for coordinates: $latitude, $longitude")
 
-            addresses.map { buildGeocoderResult(it, latitude, longitude) }.toTypedArray()
+            buildGeocoderResult(addr, latitude, longitude)
         }
     }
 
@@ -107,7 +101,7 @@ class HybridNitroGeocoder : HybridNitroGeocoderSpec() {
             }
 
             val limit = maxResults.toInt().coerceIn(1, 20)
-            val addresses = geocoder.getFromLocationName(address, limit) ?: emptyList()
+            val addresses = getGeocoder(locale).getFromLocationName(address, limit) ?: emptyList()
             addresses.map { buildGeocoderResult(it) }.toTypedArray()
         }
     }
@@ -128,7 +122,7 @@ class HybridNitroGeocoder : HybridNitroGeocoderSpec() {
                 throw Exception("Geocoder not available")
             }
 
-            val addr = geocoder.getFromLocation(latitude, longitude, 20)?.firstOrNull()
+            val addr = getGeocoder("").getFromLocation(latitude, longitude, 1)?.firstOrNull()
                 ?: throw Exception("No result found")
 
             listOfNotNull(

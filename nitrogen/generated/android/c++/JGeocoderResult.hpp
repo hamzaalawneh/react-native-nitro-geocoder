@@ -44,48 +44,36 @@ namespace margelo::nitro::nitrogeocoder {
       jni::local_ref<JPosition> position = this->getFieldValue(fieldPosition);
       static const auto fieldFormattedAddress = clazz->getField<jni::JString>("formattedAddress");
       jni::local_ref<jni::JString> formattedAddress = this->getFieldValue(fieldFormattedAddress);
-      static const auto fieldFeatureName = clazz->getField<jni::JString>("featureName");
-      jni::local_ref<jni::JString> featureName = this->getFieldValue(fieldFeatureName);
-      static const auto fieldStreetNumber = clazz->getField<jni::JString>("streetNumber");
-      jni::local_ref<jni::JString> streetNumber = this->getFieldValue(fieldStreetNumber);
-      static const auto fieldStreetName = clazz->getField<jni::JString>("streetName");
-      jni::local_ref<jni::JString> streetName = this->getFieldValue(fieldStreetName);
-      static const auto fieldPostalCode = clazz->getField<jni::JString>("postalCode");
-      jni::local_ref<jni::JString> postalCode = this->getFieldValue(fieldPostalCode);
+      static const auto fieldStreet = clazz->getField<jni::JString>("street");
+      jni::local_ref<jni::JString> street = this->getFieldValue(fieldStreet);
       static const auto fieldCity = clazz->getField<jni::JString>("city");
       jni::local_ref<jni::JString> city = this->getFieldValue(fieldCity);
-      static const auto fieldCountry = clazz->getField<jni::JString>("country");
-      jni::local_ref<jni::JString> country = this->getFieldValue(fieldCountry);
-      static const auto fieldCountryCode = clazz->getField<jni::JString>("countryCode");
-      jni::local_ref<jni::JString> countryCode = this->getFieldValue(fieldCountryCode);
       static const auto fieldState = clazz->getField<jni::JString>("state");
       jni::local_ref<jni::JString> state = this->getFieldValue(fieldState);
       static const auto fieldSubAdminArea = clazz->getField<jni::JString>("subAdminArea");
       jni::local_ref<jni::JString> subAdminArea = this->getFieldValue(fieldSubAdminArea);
       static const auto fieldSubLocality = clazz->getField<jni::JString>("subLocality");
       jni::local_ref<jni::JString> subLocality = this->getFieldValue(fieldSubLocality);
+      static const auto fieldCountry = clazz->getField<jni::JString>("country");
+      jni::local_ref<jni::JString> country = this->getFieldValue(fieldCountry);
+      static const auto fieldCountryCode = clazz->getField<jni::JString>("countryCode");
+      jni::local_ref<jni::JString> countryCode = this->getFieldValue(fieldCountryCode);
+      static const auto fieldPostalCode = clazz->getField<jni::JString>("postalCode");
+      jni::local_ref<jni::JString> postalCode = this->getFieldValue(fieldPostalCode);
       static const auto fieldRegion = clazz->getField<JVariant_NullType_Region>("region");
       jni::local_ref<JVariant_NullType_Region> region = this->getFieldValue(fieldRegion);
-      static const auto fieldInlandWater = clazz->getField<jni::JString>("inlandWater");
-      jni::local_ref<jni::JString> inlandWater = this->getFieldValue(fieldInlandWater);
-      static const auto fieldOcean = clazz->getField<jni::JString>("ocean");
-      jni::local_ref<jni::JString> ocean = this->getFieldValue(fieldOcean);
       return GeocoderResult(
         position->toCpp(),
         formattedAddress->toStdString(),
-        featureName->toStdString(),
-        streetNumber->toStdString(),
-        streetName->toStdString(),
-        postalCode->toStdString(),
+        street->toStdString(),
         city->toStdString(),
-        country->toStdString(),
-        countryCode->toStdString(),
         state->toStdString(),
         subAdminArea->toStdString(),
         subLocality->toStdString(),
-        region != nullptr ? std::make_optional(region->toCpp()) : std::nullopt,
-        inlandWater->toStdString(),
-        ocean->toStdString()
+        country->toStdString(),
+        countryCode->toStdString(),
+        postalCode->toStdString(),
+        region != nullptr ? std::make_optional(region->toCpp()) : std::nullopt
       );
     }
 
@@ -95,26 +83,22 @@ namespace margelo::nitro::nitrogeocoder {
      */
     [[maybe_unused]]
     static jni::local_ref<JGeocoderResult::javaobject> fromCpp(const GeocoderResult& value) {
-      using JSignature = JGeocoderResult(jni::alias_ref<JPosition>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>, jni::alias_ref<JVariant_NullType_Region>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>);
+      using JSignature = JGeocoderResult(jni::alias_ref<JPosition>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>, jni::alias_ref<jni::JString>, jni::alias_ref<JVariant_NullType_Region>);
       static const auto clazz = javaClassStatic();
       static const auto create = clazz->getStaticMethod<JSignature>("fromCpp");
       return create(
         clazz,
         JPosition::fromCpp(value.position),
         jni::make_jstring(value.formattedAddress),
-        jni::make_jstring(value.featureName),
-        jni::make_jstring(value.streetNumber),
-        jni::make_jstring(value.streetName),
-        jni::make_jstring(value.postalCode),
+        jni::make_jstring(value.street),
         jni::make_jstring(value.city),
-        jni::make_jstring(value.country),
-        jni::make_jstring(value.countryCode),
         jni::make_jstring(value.state),
         jni::make_jstring(value.subAdminArea),
         jni::make_jstring(value.subLocality),
-        value.region.has_value() ? JVariant_NullType_Region::fromCpp(value.region.value()) : nullptr,
-        jni::make_jstring(value.inlandWater),
-        jni::make_jstring(value.ocean)
+        jni::make_jstring(value.country),
+        jni::make_jstring(value.countryCode),
+        jni::make_jstring(value.postalCode),
+        value.region.has_value() ? JVariant_NullType_Region::fromCpp(value.region.value()) : nullptr
       );
     }
   };
