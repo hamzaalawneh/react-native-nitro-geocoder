@@ -25,6 +25,18 @@ import com.margelo.nitro.core.HybridObject
   "LocalVariableName", "PropertyName", "PrivatePropertyName", "FunctionName"
 )
 abstract class HybridNitroGeocoderSpec: HybridObject() {
+  @DoNotStrip
+  private var mHybridData: HybridData = initHybrid()
+
+  init {
+    super.updateNative(mHybridData)
+  }
+
+  override fun updateNative(hybridData: HybridData) {
+    mHybridData = hybridData
+    super.updateNative(hybridData)
+  }
+
   // Default implementation of `HybridObject.toString()`
   override fun toString(): String {
     return "[HybridObject NitroGeocoder]"
@@ -56,15 +68,7 @@ abstract class HybridNitroGeocoderSpec: HybridObject() {
   @Keep
   abstract fun reverseGeocodeSimple(latitude: Double, longitude: Double): Promise<String>
 
-  // C++ backing class
-  @DoNotStrip
-  @Keep
-  protected open class CxxPart(javaPart: HybridNitroGeocoderSpec): HybridObject.CxxPart(javaPart) {
-    external override fun initHybrid(): HybridData
-  }
-  override fun createCxxPart(): CxxPart {
-    return CxxPart(this)
-  }
+  private external fun initHybrid(): HybridData
 
   companion object {
     protected const val TAG = "HybridNitroGeocoderSpec"
