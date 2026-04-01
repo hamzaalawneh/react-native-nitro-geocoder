@@ -32,42 +32,43 @@ namespace margelo::nitro::nitrogeocoder { struct Region; }
 
 namespace margelo::nitro::nitrogeocoder {
 
-  jni::local_ref<JHybridNitroGeocoderSpec::jhybriddata> JHybridNitroGeocoderSpec::initHybrid(jni::alias_ref<jhybridobject> jThis) {
+  std::shared_ptr<JHybridNitroGeocoderSpec> JHybridNitroGeocoderSpec::JavaPart::getJHybridNitroGeocoderSpec() {
+    auto hybridObject = JHybridObject::JavaPart::getJHybridObject();
+    auto castHybridObject = std::dynamic_pointer_cast<JHybridNitroGeocoderSpec>(hybridObject);
+    if (castHybridObject == nullptr) [[unlikely]] {
+      throw std::runtime_error("Failed to downcast JHybridObject to JHybridNitroGeocoderSpec!");
+    }
+    return castHybridObject;
+  }
+
+  jni::local_ref<JHybridNitroGeocoderSpec::CxxPart::jhybriddata> JHybridNitroGeocoderSpec::CxxPart::initHybrid(jni::alias_ref<jhybridobject> jThis) {
     return makeCxxInstance(jThis);
   }
 
-  void JHybridNitroGeocoderSpec::registerNatives() {
+  std::shared_ptr<JHybridObject> JHybridNitroGeocoderSpec::CxxPart::createHybridObject(const jni::local_ref<JHybridObject::JavaPart>& javaPart) {
+    auto castJavaPart = jni::dynamic_ref_cast<JHybridNitroGeocoderSpec::JavaPart>(javaPart);
+    if (castJavaPart == nullptr) [[unlikely]] {
+      throw std::runtime_error("Failed to cast JHybridObject::JavaPart to JHybridNitroGeocoderSpec::JavaPart!");
+    }
+    return std::make_shared<JHybridNitroGeocoderSpec>(castJavaPart);
+  }
+
+  void JHybridNitroGeocoderSpec::CxxPart::registerNatives() {
     registerHybrid({
-      makeNativeMethod("initHybrid", JHybridNitroGeocoderSpec::initHybrid),
+      makeNativeMethod("initHybrid", JHybridNitroGeocoderSpec::CxxPart::initHybrid),
     });
-  }
-
-  size_t JHybridNitroGeocoderSpec::getExternalMemorySize() noexcept {
-    static const auto method = javaClassStatic()->getMethod<jlong()>("getMemorySize");
-    return method(_javaPart);
-  }
-
-  void JHybridNitroGeocoderSpec::dispose() noexcept {
-    static const auto method = javaClassStatic()->getMethod<void()>("dispose");
-    method(_javaPart);
-  }
-
-  std::string JHybridNitroGeocoderSpec::toString() {
-    static const auto method = javaClassStatic()->getMethod<jni::JString()>("toString");
-    auto javaString = method(_javaPart);
-    return javaString->toStdString();
   }
 
   // Properties
   bool JHybridNitroGeocoderSpec::getIsGeocodingAvailable() {
-    static const auto method = javaClassStatic()->getMethod<jboolean()>("isGeocodingAvailable");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jboolean()>("isGeocodingAvailable");
     auto __result = method(_javaPart);
     return static_cast<bool>(__result);
   }
 
   // Methods
   std::shared_ptr<Promise<GeocoderResult>> JHybridNitroGeocoderSpec::geocode(const std::string& address, const std::string& locale) {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<JPromise::javaobject>(jni::alias_ref<jni::JString> /* address */, jni::alias_ref<jni::JString> /* locale */)>("geocode");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JPromise::javaobject>(jni::alias_ref<jni::JString> /* address */, jni::alias_ref<jni::JString> /* locale */)>("geocode");
     auto __result = method(_javaPart, jni::make_jstring(address), jni::make_jstring(locale));
     return [&]() {
       auto __promise = Promise<GeocoderResult>::create();
@@ -83,7 +84,7 @@ namespace margelo::nitro::nitrogeocoder {
     }();
   }
   std::shared_ptr<Promise<GeocoderResult>> JHybridNitroGeocoderSpec::reverseGeocode(double latitude, double longitude, const std::string& locale) {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<JPromise::javaobject>(double /* latitude */, double /* longitude */, jni::alias_ref<jni::JString> /* locale */)>("reverseGeocode");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JPromise::javaobject>(double /* latitude */, double /* longitude */, jni::alias_ref<jni::JString> /* locale */)>("reverseGeocode");
     auto __result = method(_javaPart, latitude, longitude, jni::make_jstring(locale));
     return [&]() {
       auto __promise = Promise<GeocoderResult>::create();
@@ -99,7 +100,7 @@ namespace margelo::nitro::nitrogeocoder {
     }();
   }
   std::shared_ptr<Promise<std::vector<GeocoderResult>>> JHybridNitroGeocoderSpec::geocodeMultiple(const std::string& address, double maxResults, const std::string& locale) {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<JPromise::javaobject>(jni::alias_ref<jni::JString> /* address */, double /* maxResults */, jni::alias_ref<jni::JString> /* locale */)>("geocodeMultiple");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JPromise::javaobject>(jni::alias_ref<jni::JString> /* address */, double /* maxResults */, jni::alias_ref<jni::JString> /* locale */)>("geocodeMultiple");
     auto __result = method(_javaPart, jni::make_jstring(address), maxResults, jni::make_jstring(locale));
     return [&]() {
       auto __promise = Promise<std::vector<GeocoderResult>>::create();
@@ -124,12 +125,12 @@ namespace margelo::nitro::nitrogeocoder {
     }();
   }
   double JHybridNitroGeocoderSpec::calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-    static const auto method = javaClassStatic()->getMethod<double(double /* lat1 */, double /* lon1 */, double /* lat2 */, double /* lon2 */)>("calculateDistance");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double(double /* lat1 */, double /* lon1 */, double /* lat2 */, double /* lon2 */)>("calculateDistance");
     auto __result = method(_javaPart, lat1, lon1, lat2, lon2);
     return __result;
   }
   std::shared_ptr<Promise<std::string>> JHybridNitroGeocoderSpec::reverseGeocodeSimple(double latitude, double longitude) {
-    static const auto method = javaClassStatic()->getMethod<jni::local_ref<JPromise::javaobject>(double /* latitude */, double /* longitude */)>("reverseGeocodeSimple");
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JPromise::javaobject>(double /* latitude */, double /* longitude */)>("reverseGeocodeSimple");
     auto __result = method(_javaPart, latitude, longitude);
     return [&]() {
       auto __promise = Promise<std::string>::create();

@@ -16,29 +16,38 @@
 #include <NitroModules/HybridObjectRegistry.hpp>
 
 #include "JHybridNitroGeocoderSpec.hpp"
-#include <NitroModules/DefaultConstructableObject.hpp>
 
 namespace margelo::nitro::nitrogeocoder {
 
 int initialize(JavaVM* vm) {
+  return facebook::jni::initialize(vm, []() {
+    ::margelo::nitro::nitrogeocoder::registerAllNatives();
+  });
+}
+
+struct JHybridNitroGeocoderSpecImpl: public jni::JavaClass<JHybridNitroGeocoderSpecImpl, JHybridNitroGeocoderSpec::JavaPart> {
+  static auto constexpr kJavaDescriptor = "Lcom/margelo/nitro/nitrogeocoder/HybridNitroGeocoder;";
+  static std::shared_ptr<JHybridNitroGeocoderSpec> create() {
+    static auto constructorFn = javaClassStatic()->getConstructor<JHybridNitroGeocoderSpecImpl::javaobject()>();
+    jni::local_ref<JHybridNitroGeocoderSpec::JavaPart> javaPart = javaClassStatic()->newObject(constructorFn);
+    return javaPart->getJHybridNitroGeocoderSpec();
+  }
+};
+
+void registerAllNatives() {
   using namespace margelo::nitro;
   using namespace margelo::nitro::nitrogeocoder;
-  using namespace facebook;
 
-  return facebook::jni::initialize(vm, [] {
-    // Register native JNI methods
-    margelo::nitro::nitrogeocoder::JHybridNitroGeocoderSpec::registerNatives();
+  // Register native JNI methods
+  margelo::nitro::nitrogeocoder::JHybridNitroGeocoderSpec::CxxPart::registerNatives();
 
-    // Register Nitro Hybrid Objects
-    HybridObjectRegistry::registerHybridObjectConstructor(
-      "NitroGeocoder",
-      []() -> std::shared_ptr<HybridObject> {
-        static DefaultConstructableObject<JHybridNitroGeocoderSpec::javaobject> object("com/margelo/nitro/nitrogeocoder/HybridNitroGeocoder");
-        auto instance = object.create();
-        return instance->cthis()->shared();
-      }
-    );
-  });
+  // Register Nitro Hybrid Objects
+  HybridObjectRegistry::registerHybridObjectConstructor(
+    "NitroGeocoder",
+    []() -> std::shared_ptr<HybridObject> {
+      return JHybridNitroGeocoderSpecImpl::create();
+    }
+  );
 }
 
 } // namespace margelo::nitro::nitrogeocoder

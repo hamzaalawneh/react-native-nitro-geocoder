@@ -21,5 +21,6 @@ namespace margelo::nitro::nitrogeocoder {
    * ```
    */
   int initialize(JavaVM* vm);
+  void registerAllNatives();
 
 } // namespace margelo::nitro::nitrogeocoder
